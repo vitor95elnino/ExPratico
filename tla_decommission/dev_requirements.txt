@@ -1,0 +1,7 @@
+-r requirements.txt
+commitizen
+coverage
+nose
+pre-commit
+pycodestyle
+pytest==6.2.1

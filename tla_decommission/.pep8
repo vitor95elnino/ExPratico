@@ -1,0 +1,4 @@
+[pycodestyle]
+max_line_length = 79
+ignore = E226,E24,W50,W690
+in-place = false

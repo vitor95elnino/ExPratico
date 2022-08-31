@@ -1,0 +1,9 @@
+wheel
+jira==2.0.0
+jira_insight
+openstacksdk
+#python-gitlab
+PyYaml
+#requests
+urllib3
+catoolkit
