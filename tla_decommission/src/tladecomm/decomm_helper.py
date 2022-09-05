@@ -5,13 +5,15 @@ from typing import List
 from typing import Optional
 
 from catoolkit.library.osp.osp_params import Datacenter
+from catoolkit.library.osp.osp16_params import AvailabilityZone
 from catoolkit.library.utils.loggable import Loggable
-from catoolkit.model.decommissioning.osp10_entities import Osp10Datacenter
-from catoolkit.model.decommissioning.tla_decomm import TlaDecomm
-from catoolkit.service.cloud.osp10_manager import OSP10Manager
-from catoolkit.service.cloud.osp10_provider import OSP10ProviderService
-from catoolkit.service.cloud.osp10_provider_args import OSP10ProviderArguments
-from catoolkit.service.i2.i2_config_parser import I2ConfigParser
+from catoolkit.model.decommissioning.osp16_entities import Osp16Datacenter
+from catoolkit.model.decommissioning.osp16_entities import Osp16AvailabilityZone
+from catoolkit.model.decommissioning.tla_decomm_16 import TlaDecomm
+from catoolkit.service.cloud.osp16_manager import OSP16Manager
+from catoolkit.service.cloud.osp16_provider import OSP16ProviderService
+from catoolkit.service.cloud.osp16_provider_args import OSP16ProviderArguments
+from catoolkit.service.i2.i2_osp16_config_parser import I2ConfigParser
 from catoolkit.service.jenkins.jenkins_service import JenkinsService
 from catoolkit.service.scm.gitlab_manager import GitlabManager
 from catoolkit.service.scm.gitlab_service_arguments import GitlabServiceArguments
@@ -29,9 +31,9 @@ class DecommHelper(Loggable):
         self._context: Context = context
         self._decomm_job: Optional[TlaDecomm] = None
         self._scm_service: Optional[ScmServiceInterface] = None
-        self._osp10_dcs: List[Osp10Datacenter] = []
+        self._osp16_dcs: List[Osp16Datacenter] = []
         self._jenkins_service: Optional[JenkinsService] = None
-        self.i2_config_parser: Optional[I2ConfigParser] = None
+        self._i2_osp16_config_parser: Optional[I2ConfigParser] = None
         self._initialize_services()
         self._ssl_verify = False if '0' == environ.get(
             self.FLAG_IGNORE_HTTPS_ERRORS,
@@ -48,17 +50,18 @@ class DecommHelper(Loggable):
             self.tla_name = self._context.approved_tla_name
 
         # service to retrieve tla details
-        self._i2_config_parser = I2ConfigParser(self.tla_name)
+        self._i2_osp16_config_parser = I2ConfigParser(self.tla_name)
 
         # initialize git service
         self._initialize_service_scm()
 
-        # initialize osp10 providers
-        osp10_providers = self._initialize_osp10_providers()
+        # initialize osp16 providers
+        self.osp16_providers = self._initialize_osp16_providers()
 
-        self._osp10_dcs = TlaDecomm.generate_osp10_servers_from_i2_config(
-            self._i2_config_parser.get_environments(),
-            osp10_providers
+        # todo adapt this to osp16
+        self._osp16_dcs = TlaDecomm.generate_osp16_servers_from_i2_config(
+            self._i2_osp16_config_parser.get_environments(),
+            self.osp16_providers
         )
 
         # jenkins service
@@ -68,41 +71,63 @@ class DecommHelper(Loggable):
         self._decomm_job = TlaDecomm(
             tla_name=self.tla_name,
             decomm_nfs_volumes=self._context.nfs_volumes_decomm,
-            tenant=self._i2_config_parser.get_tenant(),
-            is_isolated_repo=self._i2_config_parser.is_isolated_repo(),
+            tenant=self._i2_osp16_config_parser.get_tenant(),
+            is_isolated_repo=self._i2_osp16_config_parser.is_isolated_repo(),
             scm_service=self._scm_service,
-            osp10_deletion_assets=self._osp10_dcs,
+            osp16_deletion_assets=self._osp16_dcs,
             jenkins_service=self._jenkins_service
         )
 
-    def _initialize_osp10_providers(self) -> Dict[str, OSP10ProviderService]:
-        """Initializes and returns OSP10 Cloud Providers"""
-        osp10_providers: Dict = {}
-        osp10_manager = OSP10Manager()
-        if self._i2_config_parser.get_cloud() == osp10_manager.get_type():
-            i2_dc1_provider = osp10_manager.create_cloud_service(
-                OSP10ProviderArguments(
-                    username=self._context.osp10_username,
-                    password=self._context.osp10_password,
-                    tenant=self._i2_config_parser.get_tenant(),
-                    datacenter=Datacenter.DC1
+    def _initialize_osp16_providers(self) -> Dict[str, OSP16ProviderService]:
+        """Initializes and returns OSP16 Cloud Providers"""
+        osp16_providers: Dict = {}
+        osp16_manager = OSP16Manager()
+        if self._i2_osp16_config_parser.get_cloud() == osp16_manager.get_type():
+            i1_dc1_dev_provider = osp16_manager.create_cloud_service(
+                OSP16ProviderArguments(
+                    username=self._context.osp16_username,
+                    password=self._context.osp16_password,
+                    tenant=self._i2_osp16_config_parser.get_tenant(),
+                    datacenter=Datacenter.DC1,
+                    az=AvailabilityZone.DEV
                 )
             )
-            osp10_providers.setdefault(Datacenter.DC1.value, i2_dc1_provider)
-            i2_dc2_provider = osp10_manager.create_cloud_service(
-                OSP10ProviderArguments(
-                    username=self._context.osp10_username,
-                    password=self._context.osp10_password,
-                    tenant=self._i2_config_parser.get_tenant(),
-                    datacenter=Datacenter.DC2
+            osp16_providers.setdefault(str(Datacenter.DC1.value + AvailabilityZone.DEV.value), i1_dc1_dev_provider)
+            i2_dc1_dev_provider = osp16_manager.create_cloud_service(
+                OSP16ProviderArguments(
+                    username=self._context.osp16_username,
+                    password=self._context.osp16_password,
+                    tenant=self._i2_osp16_config_parser.get_tenant(),
+                    datacenter=Datacenter.DC2,
+                    az=AvailabilityZone.DEV
                 )
             )
-            osp10_providers.setdefault(Datacenter.DC2.value, i2_dc2_provider)
+            osp16_providers.setdefault(str(Datacenter.DC2.value + AvailabilityZone.DEV.value), i2_dc1_dev_provider)
+            i1_dc1_prd_provider = osp16_manager.create_cloud_service(
+                OSP16ProviderArguments(
+                    username=self._context.osp16_username,
+                    password=self._context.osp16_password,
+                    tenant=self._i2_osp16_config_parser.get_tenant(),
+                    datacenter=Datacenter.DC1,
+                    az=AvailabilityZone.PRD
+                )
+            )
+            osp16_providers.setdefault(str(Datacenter.DC1.value + AvailabilityZone.PRD.value), i1_dc1_prd_provider)
+            i1_dc2_prd_provider = osp16_manager.create_cloud_service(
+                OSP16ProviderArguments(
+                    username=self._context.osp16_username,
+                    password=self._context.osp16_password,
+                    tenant=self._i2_osp16_config_parser.get_tenant(),
+                    datacenter=Datacenter.DC2,
+                    az=AvailabilityZone.PRD
+                )
+            )
+            osp16_providers.setdefault(str(Datacenter.DC2.value + AvailabilityZone.PRD.value), i1_dc2_prd_provider)
         else:
             raise NotImplementedError(
-                f'{self._i2_config_parser.get_cloud()} is not supported yet'
+                f'{self._i2_osp16_config_parser.get_cloud()} is not supported yet'
             )
-        return osp10_providers
+        return osp16_providers
 
     def _initialize_jenkins(self):
         """Initializes jenkins service"""
@@ -137,3 +162,7 @@ class DecommHelper(Loggable):
         """Run the decomm"""
         # TODO: reuse the same logger
         return self._decomm_job.run()
+
+    @property
+    def osp_services(self):
+        return self.osp16_providers
