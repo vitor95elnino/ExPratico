@@ -47,8 +47,8 @@ class Context(Loggable):
     KEY_SCM_URL = 'SCM_URL'
     KEY_SCM_TOKEN = 'SCM_TOKEN'
     # osp10
-    KEY_OSP10_USERNAME = 'OSP10_USERNAME'
-    KEY_OSP10_PASSWORD = 'OSP10_PASSWORD'
+    KEY_OSP16_USERNAME = 'OSP16_USERNAME'
+    KEY_OSP16_PASSWORD = 'OSP16_PASSWORD'
     # build related
     KEY_BUILD_USER_ID = 'BUILD_USER_ID'
     KEY_BUILD_USER_EMAIL = 'BUILD_USER_EMAIL'
@@ -96,9 +96,9 @@ class Context(Loggable):
             self.scm_type = environ[self.KEY_SCM_TYPE]
             self.scm_url = environ[self.KEY_SCM_URL]
             self.scm_token = environ[self.KEY_SCM_TOKEN]
-            # OSP 10
-            self.osp10_username = environ[self.KEY_OSP10_USERNAME]
-            self.osp10_password = environ[self.KEY_OSP10_PASSWORD]
+            # OSP 16
+            self.osp16_username = environ[self.KEY_OSP16_USERNAME]
+            self.osp16_password = environ[self.KEY_OSP16_PASSWORD]
 
             # Required depending on the job step (dry-run vs real)
             # some of these vars will be provided by the REQUEST HASH
