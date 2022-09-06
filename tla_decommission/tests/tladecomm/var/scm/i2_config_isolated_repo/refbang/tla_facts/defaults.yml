@@ -1,0 +1,26 @@
+tla_facts:
+  tla: refbang
+  tenant: CloudAutomationTest
+  subnet_pool: true
+  infra_ver: '2.0'
+  serial: 2
+
+metadata:
+  chef_version: 16.2.73
+  custom_start: 'true'
+  image: app_centos7_java8
+  max_servers_per_host: 3
+  metadata_sensu_go_agent: true
+  rollout_priority_cmd: hostname | grep -Poq '02(a|b)' && echo 1 || echo 0
+  metadata_status_cmd: /usr/bin/systemctl status kafka
+  runlist: recipe[refbang-kafka],recipe[loghandle-mock],recipe[sensu-agent-config]
+  start_cmd: /usr/bin/systemctl start kafka
+  stop_cmd: /usr/bin/systemctl stop kafka
+  preflight_last_box_cmd: "echo preflight_last_box_cmd"
+  postflight_last_box_cmd: "echo postflight_last_box_cmd"
+  preflight_check_old_box: "echo preflight_check_old_box"
+  post_start_cmd: "echo pos bang"
+  pre_stop_cmd: "echo pre bang"
+  volume_1: fok_kafka_logs_01,50,pure-qa-all,/var/kafkadata/data01,ext4
+  volumeperms_1: kafka,ldap_logbot,0755
+

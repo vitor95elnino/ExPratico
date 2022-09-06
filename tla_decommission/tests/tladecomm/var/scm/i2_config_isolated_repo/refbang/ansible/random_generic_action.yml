@@ -1,0 +1,15 @@
+---
+- hosts: all
+  gather_facts: no
+  max_fail_percentage: 0
+  any_errors_fatal: yes
+  pre_tasks:
+    - include: common/load_env.yml
+      vars:
+        skip_network_decision: yes
+
+  tasks:
+    - name: random echo
+      debug:
+        msg: bang bang
+

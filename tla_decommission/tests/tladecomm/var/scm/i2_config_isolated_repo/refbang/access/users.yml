@@ -1,0 +1,8 @@
+---
+
+  users:
+    - user: Jorge.Gois@blip.pt
+      role: master
+  distlist:
+    - user: 'bangbang@blip.pt'
+      role: master

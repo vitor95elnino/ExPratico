@@ -1,0 +1,4 @@
+---
+imports:
+#fetches all templates from the /bangbang/jenkins/<folder>
+- i2/shared-configs/bangbang

@@ -1,0 +1,32 @@
+product: refbang
+
+globals:
+  rolling_percentage: 100%
+  configuration_management: chef
+  rolling_update: kafka
+  # custom_rolling_update_playbook: kafka_rolling_update.yml
+
+environments:
+  qa:
+    chef_environment: _qa
+    availability_zone: qa
+    go_environment: qa
+    template: hybrid_pipeline.xml
+    openstack_availability_zone: dev
+
+  infra:
+    chef_environment: _nxt
+    availability_zone: nxt
+    go_environment: nxt
+    template: hybrid_pipeline.xml
+    openstack_availability_zone: dev
+
+#  qa_random_generic_action:
+#    template: generic_actions_pipeline.xml
+#    playbook: random_generic_action.yml
+#    manual_pipeline: true
+#    fetch_material_from: qa
+#    availability_zone: qa
+#    original_environment: qa
+#    lock_on_failure: false
+#    dcs: [ie1]

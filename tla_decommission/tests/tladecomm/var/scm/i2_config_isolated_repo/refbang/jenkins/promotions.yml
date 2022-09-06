@@ -1,0 +1,41 @@
+---
+
+- project:
+    name: 'refbang_chef_ci_build'
+    tla: refbang
+    cm: chef
+    icon-type: ''
+    jobs:
+      - 'tla_cm_ci_build-upstream':
+          icon: 'star-blue'
+
+- project:
+    name: 'refbang_package'
+    tla: refbang
+    dc:
+      - 'ie1':
+          icon-type: ''
+      - 'ie2':
+          icon-type: '-e'
+    jobs:
+      - 'tla_package-test-promote-ie1-with-art':
+          env:
+            - 'qa':
+                dc: 'ie1'
+                icon: 'star-purple'
+                icon-type: ''
+                project: 'refbang_tests_qa'
+                promote_to: ''
+      - 'tla_package-upstream-promote-ie2-with-art':
+          env:
+            - 'qa':
+                dc: 'ie2'
+                icon: 'star-purple'
+                icon-type: '-e'
+                project: 'ie1-qa-promoted'
+                promote_to: ''
+      - 'tla_package-dc-env-promoted-manual':
+          env:
+            - 'lab':
+                icon: 'star-green'
+                promote_to: ''

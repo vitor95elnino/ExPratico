@@ -1,0 +1,63 @@
+---
+- project:
+    name: 'REFBANG CI jobs'
+    tla: 'refbang'
+    cm: 'chef'
+    cm_scm_group: 'chef-cookbooks'
+    product: 'refbang'
+    env:
+    - qa
+    - lab
+    dc:
+    - ie1
+    - ie2
+    - ie2lab
+
+    jobs:
+    - '{tla}_{cm}_ci_build'
+    - 'tla_package_rechef'
+    extended-jobs:
+    - tla_package_base_no_ci_builds:
+        package-metadata:
+          dependencies:
+            alpha:
+            - name: '{tla}_{cm}_build'
+              project-name: '{tla}_{cm}_ci_build'
+              promotion-name: 'passed-ci'
+            - name: '{tla}_conf_build'
+              project-name: 'i2_{tla}_conf_ci'
+              promotion-name: passed-ci
+            core:
+            - name: imagebuilder_osp_app_centos7_java8
+              project-name: imagebuilder_osp_app_centos7_java8
+              promotion-name: passed-build
+              metadata: ${{imagebuilder_osp_app_centos7_java8}}artifact/imagebuild_metadata.json
+
+- job:
+    name: refbang_tests_qa
+    description: 'Do not edit this job through the web!'
+    logrotate:
+      numToKeep: 20
+      daysToKeep: 30
+    wrappers:
+    - workspace-cleanup
+    builders:
+      # Change the following lines to execute the correct test commands
+    - shell: |
+        echo "bangbang"
+    # publishers:
+    #   Uncomment the following lines to archive the artifacts of the tests
+    #   - archive:
+    #      artifacts: "**/-tests/target/surefire-reports/testng-results.xml"
+    #   Uncomment the following lines to publish test results
+    #   - testng:
+    #      pattern: "**/-tests/target/surefire-reports/testng-results.xml"
+    #   Uncomment the following lines to send an email with the tests results in the attachments
+    #   - email-ext:
+    #      recipients: "team_name@blip.pt"
+    #      reply-to: "$DEFAULT_REPLYTO"
+    #      subject: "$DEFAULT_SUBJECT"
+    #      body: "$DEFAULT_CONTENT"
+    #      attachments: "**/target/surefire-reports/Suite/**/*.png"
+    #      attach-build-log: false
+    #      notify-every-unstable-build: true

@@ -1,0 +1,19 @@
+---
+rules:
+- name: tcp-vips-snip-8080
+  direction: ingress
+  protocols: [TCP]
+  ports: [8080]
+  target: managed_vip_access
+
+- name: refbang-vpn1-tcp-kafka-clients-9092
+  direction: ingress
+  protocols: [TCP]
+  ports: [9092, 9093, 9999]
+  target: managed_vpn_access
+
+- name: test-rule
+  direction: ingress
+  protocols: [TCP]
+  ports: [8080]
+  target: tla_devchef
