@@ -32,3 +32,4 @@ var/emails/*
 var/scm/*
 htmlcov/*
 .DS_Store
+/tests/tladecomm/var/

@@ -137,24 +137,24 @@ class Job(Loggable):
             self._logger.info(self.DRY_RUN_ASCII_ART)
 
             # Check if user can run this job
-            if self.get_guard_helper().is_this_job_allowed_to_run():
+            #if self.get_guard_helper().is_this_job_allowed_to_run():
                 # Get and list assets to be decommissioned
-                self._logger.info(f'LISTING ALL ASSETS')
-                self._create_decomm_helper()
-                all_assets_list = self.get_decomm_helper().dry_run()
+            self._logger.info(f'LISTING ALL ASSETS')
+            self._create_decomm_helper()
+            all_assets_list = self.get_decomm_helper().dry_run()
 
-                self._logger.info(f'Building approval email')
-                self._logger.debug(all_assets_list)
-                self.get_email_helper().generate_approval_email(
-                    [self._context.jenkins_build_user_email],
-                    all_assets_list
-                )
-                exit_code = 0  # Success
-            else:
-                self._logger.info(
-                    f'The requirements to run {self._context.tla}\'s '
-                    f'decommission are not met')
-                exit_code = 1  # Error
+            self._logger.info(f'Building approval email')
+            self._logger.debug(all_assets_list)
+            self.get_email_helper().generate_approval_email(
+                [self._context.jenkins_build_user_email],
+                all_assets_list
+            )
+            exit_code = 0  # Success
+            #else:
+            #    self._logger.info(
+            #        f'The requirements to run {self._context.tla}\'s '
+            #        f'decommission are not met')
+            #    exit_code = 1  # Error
 
         else:
             '''
