@@ -134,7 +134,8 @@ class DecommHelper(Loggable):
         self._jenkins_service = JenkinsService(
             self._context.jenkins_endpoint,
             self._context.jenkins_username,
-            self._context.jenkins_password
+            self._context.jenkins_password,
+            self._context.jen
         )
 
     def _initialize_service_scm(self):

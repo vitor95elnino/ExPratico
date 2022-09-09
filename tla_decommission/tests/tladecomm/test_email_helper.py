@@ -3,6 +3,7 @@
 from unittest import TestCase
 from unittest.mock import MagicMock
 from unittest.mock import patch
+import time
 
 from tladecomm.email_helper import EmailHelper
 
@@ -24,7 +25,16 @@ class EmailHelperTest(TestCase):
         # TODO: improve this test, check calls and arguments
 
     def test_generate_approval_email(self):
-        self.skipTest('NOT TESTED YET')
+        context = MagicMock()
+        context.approval_encryption_key.return_value = 'key1'
+        context.approval_encryption_key.jenkins_endpoint.return_value = \
+            'jenkins_endpoint1'
+        context.approval_encryption_key.jenkins_job_name.return_value = \
+            'jenkins_job_name1'
+
+        email_helper = EmailHelper(context)
+        email_helper.generate_approval_email(['oliveira'], [{'ie1dev':'refbang-qa-1'}])
+        self.assertEqual('', 'asd')
 
     @patch('tladecomm.email_helper.UrlGenerator')
     def test_parse_request_hash(self, mock_url_generator):
