@@ -13,7 +13,7 @@ from tladecomm.context import Context
 class ChangeManagerHelper(Loggable):
     """Handles all Change Management logic in the Decomm Job"""
 
-    SCM_STATUS_TRACKER_REPO = 'cloud-automation/tla_decommission_scripts'
+    SCM_STATUS_TRACKER_REPO = 'cloud-automation/osp16_tla_decommission'
     SCM_STATUS_TRACKER_PATH = 'tla_decommission/var/history/'
     SCM_STATUS_TRACKER_BRANCH_BASE = 'master'
 
