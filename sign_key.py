@@ -19,6 +19,7 @@ def get_public_key(token, key_name):
     """Get the public key used by go, in order to be signed by Vault"""
     headers = {'Content-Type': 'application/json', 'X-Vault-Token': token}
     response = requests.get(VAULT_ADDR + '/v1/tla_jas/common', headers=headers, verify=True)
+    print(response.json())
     id_rsa = response.json()['data']['id_rsa']
     id_rsa_pub = response.json()['data']['id_rsa_pub']
     write_key(id_rsa, key_name)
