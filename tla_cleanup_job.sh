@@ -16,6 +16,7 @@ cp roles/os_stack/library/os_stack_info.py roles/osp16_decomm/library/os_stack_i
 
 source ./env_vars
 
+
 docker run --rm -i \
 -v ${PWD}:/workdir \
 -v ${PWD%/[^/]*}/osp16_cleanup_job_tasks:/workdir/osp16_cleanup_job_tasks \
@@ -34,40 +35,6 @@ docker run --rm -i \
 -e TENANT \
 -e AVI_USERNAME \
 -e AVI_PASSWORD \
--e CONSUL_MASTER_TOKEN \
--e ANSIBLE_VAULT_PASSWORD \
---env-file <(cat env_vars | tr '=' ' ' | awk '{print $2}') \
-docker.app.betfair/ansible/ansible-2.8 \
-  ansible-playbook pipeline.yml \
-  -e stage='get_prereq' \
-  -e dc=${DATACENTER} \
-  -e availability_zone=${AVAILABILITY_ZONE} \
-  -e osp_az=${OSP_AZ} \
-  -e environment=${ENV} \
-  -e product_environment=${ENV} \
-  -e product=${TLA} \
-  -e vip="True" \
-  -u jenkins \
-  --connection=local
-
-docker run --rm -i \
--v ${PWD}:/workdir \
--v ${PWD%/[^/]*}/osp16_cleanup_job_tasks:/workdir/osp16_cleanup_job_tasks \
--v /home/jenkins/.ssh:/home/jenkins/.ssh:ro \
--v /home/centos/.vault_token:/home/go/.vault_token:ro \
--w /workdir \
--e WORKDIR=/workdir \
--e INFOBLOX_IP \
--e INFOBLOX_USER \
--e INFOBLOX_PASS \
--e NITRO_USER \
--e NITRO_PASS \
--e OS_USERNAME \
--e OS_PASSWORD \
--e TENANT \
--e AVI_USERNAME \
--e AVI_PASSWORD \
--e CONSUL_MASTER_TOKEN \
 --env-file <(cat env_vars | tr '=' ' ' | awk '{print $2}') \
 docker.app.betfair/ansible/ansible-2.8 \
   ansible-playbook pipeline.yml \
