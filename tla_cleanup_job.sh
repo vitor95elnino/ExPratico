@@ -20,9 +20,9 @@ source ./env_vars
 docker run --rm -i \
 -v ${PWD}:/workdir \
 -v ${PWD%/[^/]*}/osp16_cleanup_job_tasks:/workdir/osp16_cleanup_job_tasks \
--v /home/jenkins/.ssh:/home/go/.ssh:ro \
+-v /home/jenkins/.ssh:/home/jenkins/.ssh:ro \
 -v /home/centos/.vault_token:/home/go/.vault_token:ro \
--u go -w /workdir \
+-u jenkins -w /workdir \
 -e WORKDIR=/workdir \
 -e INFOBLOX_IP \
 -e INFOBLOX_USER \
