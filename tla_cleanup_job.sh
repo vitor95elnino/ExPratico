@@ -2,10 +2,10 @@
 
 # clone framework
 git clone -b 1076746-osp16-decomm-tasks git@gitlab.app.betfair:devops/framework.git --depth 1
-cd  framework
+cd framework
 
 # Build the manifest.json file
-python -c "import json;print(json.dumps({'i2_${TLA}_conf_ci': {'namespace': 'i2','build': '${TLA_BRANCH}', 'repository': 'git@gitlab.app.betfair:i2/${TLA}'}, 'mon_ci_build': {'build': 'master'}, 'DevOps_CI_Build': {'build': '${inv_build_NUMBER}'}}))" > manifest.json
+python -c "import json;print(json.dumps({'i2_${TLA}_conf_ci': {'namespace': 'i2','build': '${TLA_BRANCH}', 'repository': 'git@gitlab.app.betfair:i2/${TLA}'}, 'mon_ci_build': {'build': 'master'}, 'DevOps_CI_Build': {'build': '${inv_build_NUMBER}'}}))" >manifest.json
 
 # At this point we are inside framework/ folder
 echo "Setting the default parameters"
@@ -22,7 +22,7 @@ docker run --rm -i \
 -v ${PWD%/[^/]*}/osp16_cleanup_job_tasks:/workdir/osp16_cleanup_job_tasks \
 -v /home/jenkins/.ssh:/home/jenkins/.ssh:ro \
 -v /home/centos/.vault_token:/home/go/.vault_token:ro \
--u jenkins -w /workdir \
+-w /workdir \
 -e WORKDIR=/workdir \
 -e INFOBLOX_IP \
 -e INFOBLOX_USER \
@@ -46,5 +46,6 @@ docker.app.betfair/ansible/ansible-2.8 \
   -e product_environment=${ENV} \
   -e product=${TLA} \
   -e vip="True" \
-  --connection=local;
-
+  -u centos \
+  --private-key=./id_rsa \
+  --connection=local
