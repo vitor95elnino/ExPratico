@@ -34,6 +34,7 @@ docker run --rm -i \
 -e AVI_USERNAME \
 -e AVI_PASSWORD \
 -e CONSUL_MASTER_TOKEN \
+-e ANSIBLE_VAULT_PASSWORD \
 --env-file <(cat env_vars | tr '=' ' ' | awk '{print $2}') \
 docker.app.betfair/ansible/ansible-2.8 \
   ansible-playbook pipeline.yml \
