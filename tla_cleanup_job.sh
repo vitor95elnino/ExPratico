@@ -21,6 +21,7 @@ docker run --rm -i \
 -v ${PWD%/[^/]*}/osp16_cleanup_job_tasks:/workdir/osp16_cleanup_job_tasks \
 -v /home/jenkins/.ssh:/home/jenkins/.ssh:ro \
 -v /home/centos/.vault_token:/home/go/.vault_token:ro \
+-u jenkins \
 -w /workdir \
 -e WORKDIR=/workdir \
 -e INFOBLOX_IP \
