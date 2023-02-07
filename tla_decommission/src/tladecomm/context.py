@@ -28,6 +28,7 @@ class Context(Loggable):
     KEY_ADDITIONAL_RECIPIENTS = 'ADDITIONAL_RECIPIENTS'
     # jenkins related
     KEY_JENKINS_ENDPOINT = 'JENKINS_ENDPOINT'
+    KEY_JENKINS_AUT_ENDPOINT = 'JENKINS_AUT_ENDPOINT'
     KEY_JENKINS_WEBHOOK_TOKEN = 'JENKINS_WEBHOOK_TOKEN'
     KEY_JENKINS_JOB_NAME = 'JENKINS_JOB_NAME'
     KEY_JENKINS_USERNAME = 'JENKINS_USERNAME'
@@ -73,7 +74,7 @@ class Context(Loggable):
                 environ[self.KEY_APPROVAL_ENCRYPTION_KEY]
             self.nfs_volumes_decomm = environ[self.NFS_VOLUMES_DECOMM]
             # jenkins related
-            self.jenkins_endpoint = environ[self.KEY_JENKINS_ENDPOINT]
+            self.jenkins_endpoint = environ[self.KEY_JENKINS_AUT_ENDPOINT]
             self.jenkins_webhook_token = \
                 environ[self.KEY_JENKINS_WEBHOOK_TOKEN]
             self.jenkins_job_name = environ[self.KEY_JENKINS_JOB_NAME]
