@@ -15,6 +15,7 @@ source ../osp16_cleanup_job_tasks/osp16_cleanup_job_set_envs.sh
 cp roles/os_stack/library/os_stack_info.py roles/osp16_decomm/library/os_stack_info.py
 ## Copy id_rsa to framework folder
 cp ../id_rsa .
+cp ../id_rsa-cert.pub .
 
 source ./env_vars
 
