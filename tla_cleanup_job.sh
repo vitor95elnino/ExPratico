@@ -13,6 +13,8 @@ source ../osp16_cleanup_job_tasks/osp16_cleanup_job_set_envs.sh
 
 ## Copy script we need to use in this suite
 cp roles/os_stack/library/os_stack_info.py roles/osp16_decomm/library/os_stack_info.py
+## Copy id_rsa to framework folder
+cp ../id_rsa .
 
 source ./env_vars
 
@@ -47,5 +49,5 @@ docker.app.betfair/ansible/ansible-2.8 \
   -e product=${TLA} \
   -e vip="True" \
   -u centos \
-  --private-key=../id_rsa \
+  --private-key=${WORKSPACE}/id_rsa \
   --connection=local
