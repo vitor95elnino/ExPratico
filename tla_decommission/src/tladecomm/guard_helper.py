@@ -95,4 +95,4 @@ class GuardHelper(Loggable):
         if requested_at is not None and approval_expiration_time is None:
             approval_expiration_time = self.DEFAULT_MAX_EXPIRATION_TIME_SECONDS
 
-        return True
+        return decomm_guard.validate_rules()
