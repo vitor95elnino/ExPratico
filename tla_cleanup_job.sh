@@ -49,5 +49,5 @@ docker.app.betfair/ansible/ansible-2.8 \
   -e product=${TLA} \
   -e vip="True" \
   -u centos \
-  --private-key=${WORKSPACE}/id_rsa \
+  --private-key=/workdir/id_rsa \
   --connection=local
