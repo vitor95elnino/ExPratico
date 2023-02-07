@@ -74,7 +74,8 @@ class Context(Loggable):
                 environ[self.KEY_APPROVAL_ENCRYPTION_KEY]
             self.nfs_volumes_decomm = environ[self.NFS_VOLUMES_DECOMM]
             # jenkins related
-            self.jenkins_endpoint = environ[self.KEY_JENKINS_AUT_ENDPOINT]
+            self.jenkins_endpoint = environ[self.KEY_JENKINS_ENDPOINT]
+            self.jenkins_aut_endpoint = environ[self.KEY_JENKINS_AUT_ENDPOINT]
             self.jenkins_webhook_token = \
                 environ[self.KEY_JENKINS_WEBHOOK_TOKEN]
             self.jenkins_job_name = environ[self.KEY_JENKINS_JOB_NAME]

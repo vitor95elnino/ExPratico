@@ -33,6 +33,7 @@ class DecommHelper(Loggable):
         self._scm_service: Optional[ScmServiceInterface] = None
         self._osp16_dcs: List[Osp16Datacenter] = []
         self._jenkins_service: Optional[JenkinsService] = None
+        self._jenkins_aut_service: Optional[JenkinsService] = None
         self._i2_osp16_config_parser: Optional[I2ConfigParser] = None
         self._initialize_services()
         self._ssl_verify = False if '0' == environ.get(
@@ -66,6 +67,7 @@ class DecommHelper(Loggable):
 
         # jenkins service
         self._initialize_jenkins()
+        self._initialize_jenkins_aut()
 
         # jenkins job
         self._decomm_job = TlaDecomm(
@@ -75,7 +77,9 @@ class DecommHelper(Loggable):
             is_isolated_repo=self._i2_osp16_config_parser.is_isolated_repo(),
             scm_service=self._scm_service,
             osp16_deletion_assets=self._osp16_dcs,
-            jenkins_service=self._jenkins_service
+            jenkins_service=self._jenkins_service,
+            jenkins_aut_service=self._jenkins_aut_service
+
         )
 
     def _initialize_osp16_providers(self) -> Dict[str, OSP16ProviderService]:
@@ -133,6 +137,13 @@ class DecommHelper(Loggable):
         """Initializes jenkins service"""
         self._jenkins_service = JenkinsService(
             self._context.jenkins_endpoint,
+            self._context.jenkins_username,
+            self._context.jenkins_password
+        )
+    def _initialize_jenkins_aut(self):
+        """Initializes jenkins service"""
+        self._jenkins_service = JenkinsService(
+            self._context.jenkins_aut_endpoint,
             self._context.jenkins_username,
             self._context.jenkins_password
         )
