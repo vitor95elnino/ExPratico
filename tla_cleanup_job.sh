@@ -4,8 +4,12 @@
 git clone -b 1076746-osp16-decomm-tasks git@gitlab.app.betfair:devops/framework.git --depth 1
 cd framework
 
-# Build the manifest.json file
-python -c "import json;print(json.dumps({'i2_${TLA}_conf_ci': {'namespace': 'i2','build': '${TLA_BRANCH}', 'repository': 'git@gitlab.app.betfair:i2/${TLA}'}, 'mon_ci_build': {'build': 'master'}, 'DevOps_CI_Build': {'build': '${inv_build_NUMBER}'}}))" >manifest.json
+# Fetch the latest manifest.json file for the DC
+artifactory_url="https://artifactory-prd.prd.betfair/artifactory"
+manifest_repo="/releases"
+manifest_repo_path="/${TLA}_package/${DATACENTER}/released"
+latest_manifest=$(curl -sSf -u $art_user:$art_pass -H "content-type: text/plain" -X POST 'https://artifactory-prd.prd.betfair/artifactory/api/search/aql' -d 'items.find({"repo":"releases"},{"path":"'"$TLA"'_package/'"$DATACENTER"'/released"}).sort({"$desc": ["created"]}).limit(1)' | jq -r '.results[0].name')
+curl "${artifactory_url}${manifest_repo}${manifest_repo_path}/${latest_manifest}"
 
 # At this point we are inside framework/ folder
 echo "Setting the default parameters"
