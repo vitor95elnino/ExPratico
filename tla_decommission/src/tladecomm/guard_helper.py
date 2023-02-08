@@ -17,7 +17,7 @@ class GuardHelper(Loggable):
         'ali.ansari@ppb.com',
         'amarjot.singh@ppb.com',
         'artur.malinowski@ppb.com',
-        'calin.rus@ppb.com',
+        'calin.rus2@ppb.com',
         'caolan.cooke@ppb.com',
         'carolina.lopes@blip.pt',
         'cristian.mihali2@ppb.com',
