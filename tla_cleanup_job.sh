@@ -9,7 +9,8 @@ artifactory_url="https://artifactory-prd.prd.betfair/artifactory"
 manifest_repo="/releases"
 manifest_repo_path="/${TLA}_package/${DATACENTER}/released"
 latest_manifest=$(curl -sSf -u $ARTIFACTORY_USERNAME:$ARTIFACTORY_PASSWORD -H "content-type: text/plain" -X POST 'https://artifactory-prd.prd.betfair/artifactory/api/search/aql' -d 'items.find({"repo":"releases"},{"path":"'"$TLA"'_package/'"$DATACENTER"'/released"}).sort({"$desc": ["created"]}).limit(1)' | jq -r '.results[0].name')
-curl "${artifactory_url}${manifest_repo}${manifest_repo_path}/${latest_manifest}"
+curl "${artifactory_url}${manifest_repo}${manifest_repo_path}/${latest_manifest}" >> manifest.json
+cp ./manifest.json framework/manifest.json
 
 # At this point we are inside framework/ folder
 echo "Setting the default parameters"
