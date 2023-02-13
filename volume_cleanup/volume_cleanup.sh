@@ -13,6 +13,13 @@ cp id_rsa-cert.pub ./framework
 cp volume_cleanup/cleanup_volumes.yml ./framework
 cd ./framework
 
+docker run --rm -i \
+  -v ${PWD}:/workdir \
+  -u jenkins \
+  -w /workdir \
+  -e OS_USERNAME \
+  -e OS_PASSWORD \
+  -e TENANT \
 docker.app.betfair/ansible/ansible-2.8 \
   ansible-playbook cleanup_volumes.yml \
   -e dc=${DATACENTER} \
