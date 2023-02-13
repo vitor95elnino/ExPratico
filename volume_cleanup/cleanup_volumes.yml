@@ -1,0 +1,36 @@
+- hosts: all
+  tasks:
+    - name: set product_config
+      set_fact:
+        product_config: "{{ manifest['i2' + '_' + product + '_conf_ci'] | default(omit) }}"
+
+    - name: get tla config repo
+      git:
+        repo: "{{ manifest['i2' ~ '_' ~ product ~ '_conf_ci']['repository'] }}"
+        version: "{{ manifest['i2' ~ '_' ~ product ~ '_conf_ci']['build'] }}"
+        dest: "product_config"
+        accept_hostkey: yes
+      when: product_config is defined
+
+    - name: clone repos and configure group_vars/all
+      include_role:
+        name: get_prereq
+        tasks_from: "{{ prereq }}"
+      loop_control:
+        loop_var: prereq
+      loop:
+        - osp_clone_repos.yml
+        - setup_osp_prereq.yml
+    
+    - name: load all vars
+      include_vars: group_vars/all.yml
+
+    - name: delete volumes from the VMs
+      include_tasks: roles/osp16_decomm/osp/cleanup_volumes.yml
+      vars:
+        - stack_info: "{{ vm }}"
+      loop_control:
+        loop_var: vm
+      loop:
+        - "{{ vms_list.split(';') | replace(' ','') | replace('\t', '') | replace('\n', '') }}"
+
