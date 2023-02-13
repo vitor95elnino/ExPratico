@@ -1,6 +1,12 @@
 - hosts: all
   gather_facts: false
   tasks:
+    - name: Load Manifest
+      run_once: true
+      include_vars:
+        file: manifest.json
+        name: manifest
+        
     - name: set product_config
       set_fact:
         product_config: "{{ manifest['i2' + '_' + product + '_conf_ci'] | default(omit) }}"
