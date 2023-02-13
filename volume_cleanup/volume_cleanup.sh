@@ -10,7 +10,7 @@ curl "${artifactory_url}${manifest_repo}${manifest_repo_path}/${latest_manifest}
 
 cp id_rsa ./framework
 cp id_rsa-cert.pub ./framework
-cp cleanup_volumes.yml ./framework
+cp volume_cleanup/cleanup_volumes.yml ./framework
 cd ./framework
 
 docker.app.betfair/ansible/ansible-2.8 \
