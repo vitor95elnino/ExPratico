@@ -15,6 +15,8 @@ cd ./framework
 
 docker run --rm -i \
   -v ${PWD}:/workdir \
+  -v /home/jenkins/.ssh:/home/jenkins/.ssh:ro \
+  -v /home/centos/.vault_token:/home/go/.vault_token:ro \
   -u jenkins \
   -w /workdir \
   -e OS_USERNAME \
