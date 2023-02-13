@@ -11,7 +11,14 @@ curl "${artifactory_url}${manifest_repo}${manifest_repo_path}/${latest_manifest}
 cp id_rsa ./framework
 cp id_rsa-cert.pub ./framework
 cp volume_cleanup/cleanup_volumes.yml ./framework
+cp manifest.json ./framework
 cd ./framework
+
+# At this point we are inside framework/ folder
+echo "Setting the default parameters"
+source ../osp16_cleanup_job_tasks/osp16_cleanup_job_set_envs.sh
+
+source ./env_vars
 
 docker run --rm -i \
   -v ${PWD}:/workdir \
