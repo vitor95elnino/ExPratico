@@ -16,6 +16,8 @@ cp volume_cleanup/cleanup_volumes.yml ./framework
 cp manifest.json ./framework
 cd ./framework
 
+## Copy script we need to use in this suite
+cp roles/os_stack/library/os_stack_info.py roles/osp16_decomm/library/os_stack_info.py
 # At this point we are inside framework/ folder
 echo "Setting the default parameters"
 source ../osp16_cleanup_job_tasks/osp16_cleanup_job_set_envs.sh
@@ -32,6 +34,7 @@ docker run --rm -i \
 -e OS_USERNAME \
 -e OS_PASSWORD \
 -e TENANT \
+-e ANSIBLE_CONFIG=/workdir/ansible.cfg
 --env-file <(cat env_vars | tr '=' ' ' | awk '{print $2}') \
 docker.app.betfair/ansible/ansible-2.8 \
   ansible-playbook cleanup_volumes.yml \
