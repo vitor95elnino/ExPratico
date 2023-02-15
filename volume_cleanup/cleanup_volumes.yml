@@ -36,8 +36,7 @@
       include_tasks: roles/osp16_decomm/tasks/osp/volume_decomm_helper.yml
       vars:
         - vm: "{{ vm }}"
-      loop:
-        - "{{ vms_list.split(';') | replace(' ','') | replace('\t', '') | replace('\n', '') }}"
+      loop: "{{ vms_list.split(';') | replace(' ','') | replace('\t', '') | replace('\n', '') }}"
       loop_control:
         loop_var: vm
       
