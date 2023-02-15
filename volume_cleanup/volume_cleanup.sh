@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # clone framework
 git clone -b 1076746-osp16-decomm-tasks git@gitlab.app.betfair:devops/framework.git --depth 1
 
