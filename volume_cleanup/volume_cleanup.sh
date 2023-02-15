@@ -21,15 +21,15 @@ source ../osp16_cleanup_job_tasks/osp16_cleanup_job_set_envs.sh
 source ./env_vars
 
 docker run --rm -i \
-  -v ${PWD}:/workdir \
-  -v /home/jenkins/.ssh:/home/jenkins/.ssh:ro \
-  -v /home/centos/.vault_token:/home/go/.vault_token:ro \
-  -u jenkins \
-  -w /workdir \
-  -e OS_USERNAME \
-  -e OS_PASSWORD \
-  -e TENANT \
-  --env-file <(cat env_vars | tr '=' ' ' | awk '{print $2}') \
+-v ${PWD}:/workdir \
+-v /home/jenkins/.ssh:/home/jenkins/.ssh:ro \
+-v /home/centos/.vault_token:/home/go/.vault_token:ro \
+-u jenkins \
+-w /workdir \
+-e OS_USERNAME \
+-e OS_PASSWORD \
+-e TENANT \
+--env-file <(cat env_vars | tr '=' ' ' | awk '{print $2}') \
 docker.app.betfair/ansible/ansible-2.8 \
   ansible-playbook cleanup_volumes.yml \
   -e dc=${DATACENTER} \
