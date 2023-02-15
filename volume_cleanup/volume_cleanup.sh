@@ -29,6 +29,7 @@ docker run --rm -i \
   -e OS_USERNAME \
   -e OS_PASSWORD \
   -e TENANT \
+  --env-file <(cat env_vars | tr '=' ' ' | awk '{print $2}') \
 docker.app.betfair/ansible/ansible-2.8 \
   ansible-playbook cleanup_volumes.yml \
   -e dc=${DATACENTER} \
