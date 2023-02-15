@@ -33,7 +33,7 @@
       include_vars: group_vars/all.yml
 
     - name: delete volumes from the VMs
-      include_tasks: roles/osp16_decomm/osp/cleanup_volumes.yml
+      include_tasks: roles/osp16_decomm/tasks/osp/cleanup_volumes.yml
       vars:
         - stack_info: "{{ vm }}"
       loop_control:
