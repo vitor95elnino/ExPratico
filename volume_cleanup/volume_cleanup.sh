@@ -34,7 +34,7 @@ docker run --rm -i \
 -e OS_USERNAME \
 -e OS_PASSWORD \
 -e TENANT \
--e ANSIBLE_CONFIG=/workdir/ansible.cfg
+-e ANSIBLE_CONFIG=/workdir/ansible.cfg \
 --env-file <(cat env_vars | tr '=' ' ' | awk '{print $2}') \
 docker.app.betfair/ansible/ansible-2.8 \
   ansible-playbook cleanup_volumes.yml \
