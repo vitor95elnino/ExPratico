@@ -40,14 +40,15 @@
         name: "{{ vm }}"
         resolve_outputs: true
       register: vm_info
+      loop:
+        - "{{ vms_list.split(';') | replace(' ','') | replace('\t', '') | replace('\n', '') }}"
+      loop_control:
+        loop_var: vm
 
     - name: delete volumes from the VMs
       include_tasks: roles/osp16_decomm/tasks/osp/cleanup_volumes.yml
       vars:
         - stack_info: "{{ vm_info }}"
-      loop:
-        - "{{ vms_list.split(';') | replace(' ','') | replace('\t', '') | replace('\n', '') }}"
-      loop_control:
-        loop_var: vm
+      
       
 
