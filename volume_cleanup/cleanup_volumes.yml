@@ -32,6 +32,9 @@
     - name: load all vars
       include_vars: group_vars/all.yml
     
+    - debug:
+      msg: "{{ vms_list }}"
+    
     - name: delete volumes from the VMs
       include_tasks: roles/osp16_decomm/tasks/osp/volume_decomm_helper.yml
       vars:
