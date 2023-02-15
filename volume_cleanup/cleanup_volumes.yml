@@ -32,23 +32,14 @@
     - name: load all vars
       include_vars: group_vars/all.yml
     
-    - name: get server info
-      os_stack_info:
-        auth: "{{ osauth }}"
-        availability_zone: "{{ cloud_az }}"
-        timeout: 500
-        name: "{{ vm }}"
-        resolve_outputs: true
-      register: vm_info
+    - name: delete volumes from the VMs
+      include_tasks: roles/osp16_decomm/tasks/osp/volume_decomm_helper.yml
+      vars:
+        - vm: "{{ vm }}"
       loop:
         - "{{ vms_list.split(';') | replace(' ','') | replace('\t', '') | replace('\n', '') }}"
       loop_control:
         loop_var: vm
-
-    - name: delete volumes from the VMs
-      include_tasks: roles/osp16_decomm/tasks/osp/cleanup_volumes.yml
-      vars:
-        - stack_info: "{{ vm_info }}"
       
       
 
