@@ -28,6 +28,7 @@ docker run --rm -i \
 -v /home/centos/.vault_token:/home/go/.vault_token:ro \
 -u jenkins \
 -w /workdir \
+-e WORKDIR=/workdir \
 -e OS_USERNAME \
 -e OS_PASSWORD \
 -e TENANT \
