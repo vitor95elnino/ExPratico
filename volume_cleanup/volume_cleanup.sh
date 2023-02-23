@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # clone framework
-git clone -b 1076746-osp16-decomm-tasks git@gitlab.app.betfair:devops/framework.git --depth 1
+git clone git@gitlab.app.betfair:devops/framework.git --depth 1
 
 # Fetch the latest manifest.json file for the DC
 artifactory_url="https://artifactory-prd.prd.betfair/artifactory"
@@ -16,8 +16,6 @@ cp volume_cleanup/cleanup_volumes.yml ./framework
 cp manifest.json ./framework
 cd ./framework
 
-## Copy script we need to use in this suite
-cp roles/os_stack/library/os_stack_info.py roles/osp16_decomm/library/os_stack_info.py
 # At this point we are inside framework/ folder
 echo "Setting the default parameters"
 source ../osp16_cleanup_job_tasks/osp16_cleanup_job_set_envs.sh
