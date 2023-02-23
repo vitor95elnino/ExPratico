@@ -1,0 +1,19 @@
+---
+gslb:
+  domain_name_suffix: "internal"
+  cname: "refbang"
+  algorithm: "GEO"
+  # Uncomment the following lines IF you wish to set different priorities to the DCs (active/passive)
+  # The default priority is 10, and the two priorities CANNOT be the same
+  # A lower number means a higher priority
+  # ie1_priority: 1
+  # ie2_priority: 20
+
+health_monitor:
+  - http_monitor:
+      http_request: "GET /webping"
+      http_response_code:
+        - HTTP_2XX
+      http_response: "OK"
+    monitor_port: 80
+    type: HTTP

@@ -1,0 +1,26 @@
+# This file was automatically generated, adapt it to your needs.
+---
+domains:
+  - refbang
+
+lbvservers:
+  - name: lb-80-refbang
+    servicetype: HTTP
+    lbmethod: LEASTCONNECTION
+    persistencetype: 'NONE'
+    service:
+      servicetype: HTTP
+      maxclient: 0
+      port: 8080
+      cmp: 'NO'
+      lbmonitor: 'mon-http-refbang'
+
+lbmonitors:
+  - name: 'mon-http-refbang'
+    type: 'HTTP-ECV'
+    send: 'GET /webping'
+    recv: 'OK'
+    lrtm: 'ENABLED'
+    downtime: 5
+
+roll_percentage: 100%

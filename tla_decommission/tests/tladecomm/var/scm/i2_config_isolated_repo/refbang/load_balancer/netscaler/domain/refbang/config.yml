@@ -1,0 +1,22 @@
+# This file was automatically generated, adapt it to your needs.
+---
+csvservers:
+  - name: "cs-80-refbang"
+    casesensitive: "OFF"
+    listenpolicy: "None"
+    stateupdate: "ENABLED"
+    servicetype: "HTTP"
+    port: 80
+    clttimeout: 180
+    bindings:
+      - lbvserver: "lb-80-refbang"
+  - name: "cs-443-refbang"
+    casesensitive: "OFF"
+    listenpolicy: "None"
+    stateupdate: "ENABLED"
+    servicetype: "SSL"
+    certificate: "wildcard.app.betfair.san"
+    port: 443
+    clttimeout: 180
+    bindings:
+      - lbvserver: "lb-80-refbang"

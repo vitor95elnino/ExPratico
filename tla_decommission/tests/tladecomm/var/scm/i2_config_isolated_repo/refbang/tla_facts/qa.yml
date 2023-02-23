@@ -1,0 +1,8 @@
+host_groups:
+- instances: 1-3
+  profile:
+    diskspace: 20
+    flavor: 2cpu4gb
+  custom_metadata:
+    instance-1:
+      runlist: recipe[refbang-kafka],recipe[loghandle-mock],recipe[sensu-agent-config]

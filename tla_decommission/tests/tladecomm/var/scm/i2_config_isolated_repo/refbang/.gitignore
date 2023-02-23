@@ -1,0 +1,4 @@
+*.retry
+*.swp
+*.pyc
+.DS_Store
