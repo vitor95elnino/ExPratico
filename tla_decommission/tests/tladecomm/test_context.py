@@ -18,7 +18,7 @@ class ContextTest(TestCase):
         environ['JENKINS_WEBHOOK_TOKEN'] = 'dummy'
         environ['JENKINS_JOB_NAME'] = 'dummy'
         environ['JENKINS_USERNAME'] = 'dummy'
-        environ['JENKINS_PASSWORD'] = 'dummy'
+        environ['JENKINS_TOKEN'] = 'dummy'
         environ['CMDB_TYPE'] = 'dummy'
         environ['CMDB_ENDPOINT'] = 'dummy'
         environ['CMDB_USERNAME'] = 'dummy'
