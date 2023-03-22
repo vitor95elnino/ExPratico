@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # clone framework
-git clone git@gitlab.app.betfair:devops/framework.git --depth 1
+git clone git@gitlab.app.betfair:devops/framework.git -b remove-chmod-render-groupvars-all --depth 1
 cd framework
 
 # Fetch the latest manifest.json file for the DC

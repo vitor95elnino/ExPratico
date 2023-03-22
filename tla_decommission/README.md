@@ -85,7 +85,7 @@ See ```jenkins_builder.sh``` for the default assignments.
 * `JENKINS_WEBHOOK_TOKEN ` -
 * `JENKINS_JOB_NAME ` -
 * `JENKINS_USERNAME ` -
-* `JENKINS_PASSWORD ` -
+* `JENKINS_TOKEN ` -
 * `CMDB_TYPE ` -
 * `CMDB_ENDPOINT ` -
 * `CMDB_USERNAME ` -

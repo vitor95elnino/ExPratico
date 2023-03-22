@@ -27,7 +27,7 @@ class JobTest(TestCase):
         environ['JENKINS_JOB_NAME'] = 'dummy_JENKINS_JOB_NAME'
         environ['JENKINS_WEBHOOK_TOKEN'] = 'dummy_JENKINS_WEBHOOK_TOKEN'
         environ['JENKINS_USERNAME'] = 'dummy_JENKINS_USERNAME'
-        environ['JENKINS_PASSWORD'] = 'dummy_JENKINS_PASSWORD'
+        environ['JENKINS_TOKEN'] = 'dummy_JENKINS_TOKEN'
         environ['CMDB_TYPE'] = 'dummy_CMDB_CMDB_TYPE'
         environ['CMDB_ENDPOINT'] = 'dummy_CMDB_ENDPOINT'
         environ['CMDB_USERNAME'] = 'dummy_CMDB_USERNAME'
