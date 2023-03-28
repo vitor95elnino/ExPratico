@@ -7,8 +7,13 @@ cd framework
 # Fetch the latest manifest.json file for the DC
 artifactory_url="https://artifactory-prd.prd.betfair/artifactory"
 manifest_repo="/releases"
-manifest_repo_path="/${TLA}_package/${DATACENTER}/released"
-latest_manifest=$(curl -sSf -u $ARTIFACTORY_USERNAME:$ARTIFACTORY_PASSWORD -H "content-type: text/plain" -X POST 'https://artifactory-prd.prd.betfair/artifactory/api/search/aql' -d 'items.find({"repo":"releases"},{"path":"'"$TLA"'_package/'"$DATACENTER"'/released"}).sort({"$desc": ["created"]}).limit(1)' | jq -r '.results[0].name')
+manifest_repo_path="/${TLA}_package/${DATACENTER}/${ENV}"
+latest_manifest=$(curl -sSf -u $ARTIFACTORY_USERNAME:$ARTIFACTORY_PASSWORD -H "content-type: text/plain" -X POST 'https://artifactory-prd.prd.betfair/artifactory/api/search/aql' -d 'items.find({"repo":"releases","$or":[{"path":{"$match":"'"$TLA"'_package/'"$DATACENTER"'/'"$ENV"'"}}]}).sort({"$desc": ["created"]}).limit(1)' | jq -r '.results[0].name')
+#fail this job if latest_manifest is empty
+if [ -z "$latest_manifest" ]; then
+  echo "No manifest found for $TLA $DATACENTER $ENV"
+  exit 1
+fi
 curl "${artifactory_url}${manifest_repo}${manifest_repo_path}/${latest_manifest}" >> manifest.json
 
 # At this point we are inside framework/ folder
