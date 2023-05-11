@@ -5,6 +5,9 @@ git clone git@gitlab.app.betfair:devops/framework.git --depth 1
 cd framework
 
 # Fetch the latest manifest.json file for the DC
+TLA=$(echo "${TLA}" | tr '[:upper:]' '[:lower:]')
+DATACENTER=$(echo "${DATACENTER}" | tr '[:upper:]' '[:lower:]')
+ENV=$(echo "${ENV}" | tr '[:upper:]' '[:lower:]')
 artifactory_url="https://artifactory-prd.prd.betfair/artifactory"
 manifest_repo="/releases"
 manifest_repo_path="/${TLA}_package/${DATACENTER}/${ENV}"
