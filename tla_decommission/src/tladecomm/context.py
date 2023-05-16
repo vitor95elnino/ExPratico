@@ -137,7 +137,7 @@ class Context(Loggable):
 
     def _get_var_or_none(self, varname: str) -> Optional[str]:
         result = environ.get(varname)  # default None
-        if '' == result:
+        if result == "":
             result = None
             # deal with jenkins limitation sending empty instead of None
         return result
@@ -162,10 +162,15 @@ class Context(Loggable):
     def _validate(self):
         """Iterate through all of this class's STRING attributes and verify
         that none of them are empty
+        Excepted from validation: additional_recipients inputs
         """
+        match_string = "additional_recipients"
         for attr, value in vars(self).items():
+            if match_string in str(attr):
+                # skip validation for additional recipients
+                continue
             if isinstance(value, str) and value.strip() == '':
-                raise Exception(f"ERROR - Variable '{attr}' cannot be empty.")
+                raise Exception(f"ERROR - Variable {attr} cannot be empty.")
 
     def is_dry_run(self) -> bool:
         return self.REQUEST_HASH_DRY_RUN == self.request_hash
@@ -195,12 +200,10 @@ class Context(Loggable):
         self.request_additional_recipients = \
             data_to_load.get(
                 self.KEY_ADDITIONAL_RECIPIENTS,
-                self.request_additional_recipients
+                self.parsed_additional_recipients
             )
         self.request_requested_at = \
             data_to_load.get(self.KEY_REQUESTED_AT, self.request_requested_at)
         self.request_requested_by = \
             data_to_load.get(self.KEY_REQUESTED_BY, self.request_requested_by)
-        self._parse_additional_recipients()
-
         self._validate()

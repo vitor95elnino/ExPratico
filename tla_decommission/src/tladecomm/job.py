@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-from datetime import datetime
 import json
 import sys
 import time
+from datetime import datetime
 
 from catoolkit.library.utils.loggable import Loggable
 from tladecomm.change_manager_helper import ChangeManagerHelper
@@ -142,10 +142,13 @@ class Job(Loggable):
                 self._logger.info(f'LISTING ALL ASSETS')
                 self._create_decomm_helper()
                 all_assets_list = self.get_decomm_helper().dry_run()
-
+# not introducing additional_recipients into recipients list yet, due to Bug 1178032
+                # recipients = self._context.parsed_additional_recipients
+                # recipients.extend([self._context.jenkins_build_user_email])
                 self._logger.info(f'Building approval email')
                 self._logger.debug(all_assets_list)
                 self.get_email_helper().generate_approval_email(
+                    # recipients,
                     [self._context.jenkins_build_user_email],
                     all_assets_list
                 )
@@ -200,7 +203,7 @@ class Job(Loggable):
                         f'Triggered {len(decomm_results)} tasks'
                     for (result, url) in decomm_results:
                         jira_pretty_text = jira_pretty_text + \
-                            f'\n{result} - {url}'
+                                           f'\n{result} - {url}'
                     self.get_change_manager_helper(). \
                         add_execution_details(jira_pretty_text)
 
