@@ -18,6 +18,7 @@ from catoolkit.service.jenkins.jenkins_service import JenkinsService
 from catoolkit.service.scm.gitlab_manager import GitlabManager
 from catoolkit.service.scm.gitlab_service_arguments import GitlabServiceArguments
 from catoolkit.service.scm.scm_interface import ScmServiceInterface
+from catoolkit.service.stalker.stalker_service import StalkerService
 from tladecomm.context import Context
 
 
@@ -34,6 +35,7 @@ class DecommHelper(Loggable):
         self._osp16_dcs: List[Osp16Datacenter] = []
         self._jenkins_service: Optional[JenkinsService] = None
         self._jenkins_aut_service: Optional[JenkinsService] = None
+        self._stalker_service: Optional[StalkerService] = None
         self._i2_osp16_config_parser: Optional[I2ConfigParser] = None
         self._initialize_services()
         self._ssl_verify = False if '0' == environ.get(
@@ -68,6 +70,9 @@ class DecommHelper(Loggable):
         # jenkins service
         self._initialize_jenkins()
         self._initialize_jenkins_aut()
+        
+        #initialize stalker service
+        self._initialize_stalker()
 
         # jenkins job
         self._decomm_job = TlaDecomm(
@@ -78,8 +83,8 @@ class DecommHelper(Loggable):
             scm_service=self._scm_service,
             osp16_deletion_assets=self._osp16_dcs,
             jenkins_service=self._jenkins_service,
-            jenkins_aut_service=self._jenkins_aut_service
-
+            jenkins_aut_service=self._jenkins_aut_service,
+            stalker_service=self._stalker_service
         )
 
     def _initialize_osp16_providers(self) -> Dict[str, OSP16ProviderService]:
@@ -163,6 +168,13 @@ class DecommHelper(Loggable):
             raise NotImplementedError(
                 f'{self._context.scm_type} is not supported yet'
             )
+    
+    def _initialize_stalker(self):
+        """Initializes stalker service"""
+        self._stalker_service = StalkerService(
+            self._context.stalker_endpoint,
+            self._context.stalker_token
+        )
 
     def dry_run(self):
         """Print assets to be decommissioned"""

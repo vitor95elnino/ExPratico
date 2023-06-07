@@ -64,3 +64,29 @@ docker.app.betfair/ansible/ansible-2.8 \
   -u centos \
   --private-key=/workdir/id_rsa \
   --connection=local
+
+# Delete Go Pipelines
+if [[ ${GOCD_Pipelines} =~ "yes" ]];then
+   echo -e "Removing GOCD Pipelines for ${TLA}"
+
+   git clone git@gitlab.app.betfair:devops/go_pipeline_builder.git --depth 1
+   pushd go_pipeline_builder
+   python python-modules/gpb/run_gpb.py -p ${TLA} $GO_USER $GO_PASSWORD -dp
+   popd
+
+   echo -e "Removing GOCD config for ${TLA}"
+   # Get go server name from TLA gocd config. Default it to 'prd'
+   GO_SERVER=$(grep -v '^\s*#' go_pipeline_builder/${TLA}.yml | grep 'go_server:' | awk '{print $2}' | tr -d "'\"")
+   GO_SERVER=${GO_SERVER:-'prd'}
+
+   # Clone the relevant repo from this group https://gitlab.app.betfair/i2/go-config-private-repos
+   mkdir go_private_repo
+   git clone "git@gitlab.app.betfair:i2/go-config-private-repos/${GO_SERVER}" go_private_repo
+
+   # Delete all files for the belonging to the TLA, and push the changes.
+   pushd go_private_repo
+   git rm "*_${TLA}_*"
+   git commit -m "Decommission ${TLA}"
+   git push
+   popd
+fi
