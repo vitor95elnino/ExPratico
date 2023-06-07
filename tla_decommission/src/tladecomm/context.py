@@ -51,6 +51,9 @@ class Context(Loggable):
     # osp10
     KEY_OSP16_USERNAME = 'OSP16_USERNAME'
     KEY_OSP16_PASSWORD = 'OSP16_PASSWORD'
+    # stalker
+    KEY_STK_ENDPOINT = 'STK_ENDPOINT'
+    KEY_STK_TOKEN = 'STK_TOKEN'
     # build related
     KEY_BUILD_USER_ID = 'BUILD_USER_ID'
     KEY_BUILD_USER_EMAIL = 'BUILD_USER_EMAIL'
@@ -103,6 +106,9 @@ class Context(Loggable):
             # OSP 16
             self.osp16_username = environ[self.KEY_OSP16_USERNAME]
             self.osp16_password = environ[self.KEY_OSP16_PASSWORD]
+            #STALKER
+            self.stalker_endpoint = environ[self.KEY_STK_ENDPOINT]
+            self.stalker_token = environ[self.KEY_STK_TOKEN]
 
             # Required depending on the job step (dry-run vs real)
             # some of these vars will be provided by the REQUEST HASH
