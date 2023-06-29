@@ -1,0 +1,59 @@
+version: 1
+formatters:
+  simple:
+    format: '%(asctime)s - %(levelname)s - %(name)s - %(message)s'
+  jenkins:
+    format: '%(levelname)s - %(module)s - %(message)s'
+handlers:
+  console:
+    class: logging.StreamHandler
+    level: DEBUG
+    formatter: simple
+    stream: ext://sys.stdout
+  jenkins_console:
+    class: logging.StreamHandler
+    level: INFO
+    formatter: jenkins
+    stream: ext://sys.stdout
+loggers:
+  jenkins:
+    level: INFO
+    handlers: [jenkins_console]
+    propagate: no
+
+#  tladecomm.job:
+#    level: DEBUG
+#    handlers: [console]
+#    propagate: no
+#
+#
+#  tladecomm.context:
+#    level: DEBUG
+#    handlers: [console]
+#    propagate: no
+#  tladecomm.guard_service:
+#    level: DEBUG
+#    handlers: [console]
+#    propagate: no
+#  tladecomm.email_helper:
+#    level: DEBUG
+#    handlers: [console]
+#    propagate: no
+#  tladecomm.guard_helper:
+#    level: DEBUG
+#    handlers: [console]
+#    propagate: no
+
+#  catoolkit.model.guard_tower:
+#    level: DEBUG
+#    handlers: [console]
+#    propagate: no
+
+  # full_debug:
+  #   level: DEBUG
+  #   handlers: [console]
+  #   propagate: no
+
+root:
+  level: WARNING
+  handlers: [console]
