@@ -74,9 +74,11 @@ if [[ ${GOCD_Pipelines} =~ "yes" ]];then
    python python-modules/gpb/run_gpb.py -p ${TLA} $GO_USER $GO_PASSWORD -dp
    popd
 
+  # Clone TLA repo 
    echo -e "Removing GOCD config for ${TLA}"
+   git clone git@gitlab.app.betfair:i2/${TLA}.git
    # Get go server name from TLA gocd config. Default it to 'prd'
-   GO_SERVER=$(grep -v '^\s*#' go_pipeline_builder/${TLA}.yml | grep 'go_server:' | awk '{print $2}' | tr -d "'\"")
+   GO_SERVER=$(grep -v '^\s*#' ${TLA}/gocd/pipelines.yml | grep 'go_server:' | awk '{print $2}' | tr -d "'\"")
    GO_SERVER=${GO_SERVER:-'prd'}
 
    # Clone the relevant repo from this group https://gitlab.app.betfair/i2/go-config-private-repos
