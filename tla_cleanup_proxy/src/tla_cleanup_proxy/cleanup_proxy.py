@@ -90,6 +90,9 @@ class CleanupProxy(Loggable):
             self._logger.info(
                 f'Build completed. Result is {build_result}. '
                 f'Url is {build_url}')
+            
+        if build_result == self.JENKINS_JOB_RESULT_FAILURE:
+            sys.exit(1)
 
 
 if __name__ == '__main__':
