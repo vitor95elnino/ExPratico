@@ -1,5 +1,6 @@
 #!/usr/bin/env sh
 
+echo "Running cleanup proxy"
 docker run --rm  \
 -v "$(pwd)":/app \
 --workdir=/app \
@@ -19,5 +20,12 @@ docker run --rm  \
 -e GOCD_Pipelines="$GOCD_Pipelines" \
 -e TLA_BRANCH="$TLA_BRANCH" \
 -e LOGGER_OVERRIDE="$LOGGER_OVERRIDE" \
-docker.app.betfair/ansible/ansible-2.9:300 ./run_job.sh  | tee outputjob.txt
-ecode=${PIPESTATUS[0]}
+docker.app.betfair/ansible/ansible-8.0 ./run_job.sh
+
+# Check the exit code of the docker run command
+if [ $? != 0 ]; then
+    echo "There was a problem running the cleanup, please reach out to someone from CA."
+    exit 1
+fi
+
+echo "Cleanup proxy finished"

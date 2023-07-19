@@ -12,8 +12,9 @@ artifactory_url="https://artifactory-prd.prd.betfair/artifactory"
 manifest_repo="/releases"
 manifest_repo_path="/${TLA}_package/${DATACENTER}/${ENV}"
 latest_manifest=$(curl -sSf -u $ARTIFACTORY_USERNAME:$ARTIFACTORY_PASSWORD -H "content-type: text/plain" -X POST 'https://artifactory-prd.prd.betfair/artifactory/api/search/aql' -d 'items.find({"repo":"releases","$or":[{"path":{"$match":"'"$TLA"'_package/'"$DATACENTER"'/'"$ENV"'"}}]}).sort({"$desc": ["created"]}).limit(1)' | jq -r '.results[0].name')
+echo $latest_manifest
 #fail this job if latest_manifest is empty
-if [ -z "$latest_manifest" ]; then
+if [ $latest_manifest == *"File not found"* ]; then
   echo "No manifest found for $TLA $DATACENTER $ENV"
   exit 1
 fi
@@ -51,7 +52,7 @@ docker run --rm -i \
 -e AVI_USERNAME \
 -e AVI_PASSWORD \
 --env-file <(cat env_vars | tr '=' ' ' | awk '{print $2}') \
-docker.app.betfair/ansible/ansible-2.8 \
+docker.app.betfair/ansible/ansible-8.0 \
   ansible-playbook pipeline.yml \
   -e stage='osp16_decomm' \
   -e dc=${DATACENTER} \
@@ -64,6 +65,12 @@ docker.app.betfair/ansible/ansible-2.8 \
   -u centos \
   --private-key=/workdir/id_rsa \
   --connection=local
+
+# Check the exit code of the docker run command
+if [ $? != 0 ]; then
+    echo "There was a problem running the cleanup, please check the logs."
+    exit 1
+fi
 
 # Delete Go Pipelines
 if [[ ${GOCD_Pipelines} =~ "yes" ]];then
