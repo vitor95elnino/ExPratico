@@ -32,12 +32,12 @@ class CleanupProxy(Loggable):
         self.availability_zone = environ.get('AVAILABILITY_ZONE')
         self.az_osp16 = environ.get('AZ_OSP16')
         self.tenant = environ.get('TENANT')
-        self.cloud_name = environ.get('CLOUD_NAME')
-        self.cleanup_on = environ.get('CLEANUP_ON')
-        self.isolated_repo = environ.get('ISOLATED_REPO')
-        self.nfs_volumes = environ.get('NFS_VOLUMES')
+        self.cloud_name = 'infra_osp16'
+        self.cleanup_on = ['T1_Netscalers', 'T2_NewPerimNetscalers']
+        self.isolated_repo = 'yes'
+        self.nfs_volumes ='yes'
         self.gocd_pipelines = environ.get('GOCD_Pipelines')
-        self.tla_branch = environ.get('TLA_BRANCH')
+        self.tla_branch = 'master'
 
     def _initialize_jenkins_aut(self):
         """Initializes jenkins service"""
@@ -97,4 +97,3 @@ class CleanupProxy(Loggable):
 
 if __name__ == '__main__':
     CleanupProxy().trigger_aut_cleanup()
-    sys.exit(0)
