@@ -6,6 +6,8 @@ from catoolkit.library.utils.loggable import Loggable
 from catoolkit.service.jenkins.jenkins_service import JenkinsService
 from catoolkit.service.jenkins.decomm.osp16_tla_cleanup_job_params import TlaCleanupJobParams
 from catoolkit.service.jenkins.decomm.osp16_tla_cleanup_job import TlaCleanupJob
+from catoolkit.service.jenkins.osp_subnet_delete.subnet_delete_job_params import SubnetDeleteJobParams
+from catoolkit.service.jenkins.osp_subnet_delete.subnet_delete_job import SubnetDeleteJob
 
 
 class CleanupProxy(Loggable):
@@ -21,9 +23,12 @@ class CleanupProxy(Loggable):
         self._logger.info('Starting cleanup proxy from python')
         # Jenkins
         self._jenkins_aut_endpoint = environ.get('JENKINS_AUT_ENDPOINT')
+        self._jenkins_prd_endpoint = environ.get('JENKINS_PRD_ENDPOINT')
         self._jenkins_username = environ.get('JENKINS_USERNAME')
         self._jenkins_aut_token = environ.get('JENKINS_AUT_TOKEN')
+        self._jenkins_prd_token = environ.get('JENKINS_PRD_TOKEN')
         self._jenkins_aut_service = self._initialize_jenkins_aut()
+        self._jenkins_prd_service = self._initialize_jenkins_prd()
 
         # TLA params
         self.tla = environ.get('TLA')
@@ -36,6 +41,7 @@ class CleanupProxy(Loggable):
         self.cleanup_on = ['T1_Netscalers', 'T2_NewPerimNetscalers']
         self.isolated_repo = 'yes'
         self.nfs_volumes ='yes'
+        self.subnet_delete = 'true'
         self.gocd_pipelines = environ.get('GOCD_Pipelines')
         self.tla_branch = 'master'
 
@@ -47,6 +53,15 @@ class CleanupProxy(Loggable):
             self._jenkins_aut_token
         )
         return jenkins_aut_service
+        
+    def _initialize_jenkins_prd(self):
+        """Initializes jenkins service"""
+        jenkins_prd_service = JenkinsService(
+            self._jenkins_prd_endpoint,
+            self._jenkins_username,
+            self._jenkins_prd_token
+        )
+        return jenkins_prd_service
 
     def _build_tla_decomm_job_params(self) -> TlaCleanupJobParams:
         return TlaCleanupJobParams(
@@ -67,6 +82,18 @@ class CleanupProxy(Loggable):
             }
         )
 
+    def _build_subnet_delete_job_params(self) -> SubnetDeleteJobParams:
+        return SubnetDeleteJobParams(
+            **{
+                'dc': self.dc,
+                'openstack_az': self.az_osp16,
+                'tla': self.tla,
+                'env': self.env,
+                'tenant': self.tenant,
+                'subnet_delete': self.subnet_delete
+            }
+        )
+
     def trigger_aut_cleanup(self):
 
         params = self._build_tla_decomm_job_params()
@@ -82,18 +109,46 @@ class CleanupProxy(Loggable):
         self._logger.debug(full_log)
         if build_result == self.JENKINS_JOB_RESULT_FAILURE:
             self._logger.warning(
-                f'Build is failure. Url is {build_url}')
+                f'Cleanup build is failure. Url is {build_url}')
+            sys.exit(1)
         elif build_result == self.JENKINS_JOB_RESULT_SUCCESS:
             self._logger.info(
-                f'Build is success. Url is {build_url}')
+                f'Cleanup build is success. Url is {build_url}')
         else:
             self._logger.info(
-                f'Build completed. Result is {build_result}. '
+                f'Cleanup build completed. Result is {build_result}. '
                 f'Url is {build_url}')
-            
         if build_result == self.JENKINS_JOB_RESULT_FAILURE:
             sys.exit(1)
 
 
+    def trigger_subnet_cleanup(self):
+
+        self._logger.info('Running subnet delete')
+
+        params = self._build_subnet_delete_job_params()
+        self._jenkins_prd_service.trigger_jenkins_build(
+            SubnetDeleteJob(
+                params,
+            )
+        )
+
+        (build_result, build_url, full_log) = \
+            self._jenkins_prd_service.poll_job_for_completion()
+
+        self._logger.debug(full_log)
+        if build_result == self.JENKINS_JOB_RESULT_FAILURE:
+            self._logger.warning(
+                f'Subnet delete build is failure. Url is {build_url}')
+            sys.exit(1)
+        elif build_result == self.JENKINS_JOB_RESULT_SUCCESS:
+            self._logger.info(
+                f'Subnet delete build is success. Url is {build_url}')
+        else:
+            self._logger.info(
+                f'Subnet delete build completed. Result is {build_result}. '
+                f'Url is {build_url}')
+
 if __name__ == '__main__':
     CleanupProxy().trigger_aut_cleanup()
+    sys.exit(0)
