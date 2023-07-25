@@ -41,7 +41,7 @@ class CleanupProxy(Loggable):
         self.cleanup_on = ['T1_Netscalers', 'T2_NewPerimNetscalers']
         self.isolated_repo = 'yes'
         self.nfs_volumes ='yes'
-        self.subnet_delete = 'true'
+        self.subnet_delete = environ.get('SUBNET_DELETE')
         self.gocd_pipelines = environ.get('GOCD_Pipelines')
         self.tla_branch = 'master'
 
@@ -151,4 +151,6 @@ class CleanupProxy(Loggable):
 
 if __name__ == '__main__':
     CleanupProxy().trigger_aut_cleanup()
+    if CleanupProxy().subnet_delete == 'true':
+        CleanupProxy().trigger_subnet_cleanup()
     sys.exit(0)

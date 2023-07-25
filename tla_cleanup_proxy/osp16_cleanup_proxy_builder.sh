@@ -21,6 +21,7 @@ docker run --rm  \
 -e JIRA_USERNAME="$JIRA_USERNAME" \
 -e JIRA_PASSWORD="$JIRA_PASSWORD" \
 -e CHANGE_ID="$CHANGE_ID" \
+-e SUBNET_DELETE="$SUBNET_DELETE" \
 docker.app.betfair/ansible/ansible-8.0 ./run_job.sh
 
 # Check the exit code of the docker run command
