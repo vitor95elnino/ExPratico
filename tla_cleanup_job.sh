@@ -8,13 +8,23 @@ cd framework
 TLA=$(echo "${TLA}" | tr '[:upper:]' '[:lower:]')
 DATACENTER=$(echo "${DATACENTER}" | tr '[:upper:]' '[:lower:]')
 ENV=$(echo "${ENV}" | tr '[:upper:]' '[:lower:]')
+# get go pipelines config from TLA repo
+git archive --remote=git@gitlab.app.betfair:i2/${TLA}.git HEAD gocd/pipelines.yml| tar xvf -
+#get the manifest path from gocd/pipelines.yml default to ENV if no fetch_material_from is defined
+ENV_MANIFEST_PATH=$(python3 - <<EOF
+import yaml
+with open('gocd/pipelines.yml', 'r') as f:
+    gocd = yaml.safe_load(f)
+print(gocd['environments']['${ENV}'].get('fetch_material_from', '${ENV}' ))
+EOF
+)
 artifactory_url="https://artifactory-prd.prd.betfair/artifactory"
 manifest_repo="/releases"
-manifest_repo_path="/${TLA}_package/${DATACENTER}/${ENV}"
+manifest_repo_path="/${TLA}_package/${DATACENTER}/${ENV_MANIFEST_PATH}"
 latest_manifest=$(curl -sSf -u $ARTIFACTORY_USERNAME:$ARTIFACTORY_PASSWORD -H "content-type: text/plain" -X POST 'https://artifactory-prd.prd.betfair/artifactory/api/search/aql' -d 'items.find({"repo":"releases","$or":[{"path":{"$match":"'"$TLA"'_package/'"$DATACENTER"'/'"$ENV"'"}}]}).sort({"$desc": ["created"]}).limit(1)' | jq -r '.results[0].name')
 echo $latest_manifest
-#fail this job if latest_manifest is empty
-if [ $latest_manifest == *"File not found"* ]; then
+#fail this job if latest_manifest is empty result is null when no manifest is found in artifactory
+if [[ "$latest_manifest" == null ]]; then
   echo "No manifest found for $TLA $DATACENTER $ENV"
   exit 1
 fi
@@ -31,7 +41,6 @@ cp ../id_rsa .
 cp ../id_rsa-cert.pub .
 
 source ./env_vars
-
 
 docker run --rm -i \
 -v ${PWD}:/workdir \
@@ -75,19 +84,11 @@ fi
 # Delete Go Pipelines
 if [[ ${GOCD_Pipelines} =~ "yes" ]];then
    echo -e "Removing GOCD Pipelines for ${TLA}"
-
-   git clone git@gitlab.app.betfair:devops/go_pipeline_builder.git --depth 1
-   pushd go_pipeline_builder
-   python python-modules/gpb/run_gpb.py -p ${TLA} $GO_USER $GO_PASSWORD -dp
-   popd
-
-  # Clone TLA repo 
-   echo -e "Removing GOCD config for ${TLA}"
-   git clone git@gitlab.app.betfair:i2/${TLA}.git
    # Get go server name from TLA gocd config. Default it to 'prd'
-   GO_SERVER=$(grep -v '^\s*#' ${TLA}/gocd/pipelines.yml | grep 'go_server:' | awk '{print $2}' | tr -d "'\"")
-   GO_SERVER=${GO_SERVER:-'prd'}
-
+   GO_SERVER=$(grep -v '^\s*#' gocd/pipelines.yml | grep 'go_server:' | awk '{print $2}' | tr -d "'\"")
+   if [[ ${GO_SERVER} == "default" || -z ${GO_SERVER} ]];then
+       GO_SERVER='prd'
+   fi
    # Clone the relevant repo from this group https://gitlab.app.betfair/i2/go-config-private-repos
    mkdir go_private_repo
    git clone "git@gitlab.app.betfair:i2/go-config-private-repos/${GO_SERVER}" go_private_repo
