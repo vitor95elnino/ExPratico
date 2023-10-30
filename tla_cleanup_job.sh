@@ -21,7 +21,7 @@ EOF
 artifactory_url="https://artifactory-prd.prd.betfair/artifactory"
 manifest_repo="/releases"
 manifest_repo_path="/${TLA}_package/${DATACENTER}/${ENV_MANIFEST_PATH}"
-latest_manifest=$(curl -sSf -u $ARTIFACTORY_USERNAME:$ARTIFACTORY_PASSWORD -H "content-type: text/plain" -X POST 'https://artifactory-prd.prd.betfair/artifactory/api/search/aql' -d 'items.find({"repo":"releases","$or":[{"path":{"$match":"'"$TLA"'_package/'"$DATACENTER"'/'"$ENV"'"}}]}).sort({"$desc": ["created"]}).limit(1)' | jq -r '.results[0].name')
+latest_manifest=$(curl -sSf -u $ARTIFACTORY_USERNAME:$ARTIFACTORY_PASSWORD -H "content-type: text/plain" -X POST 'https://artifactory-prd.prd.betfair/artifactory/api/search/aql' -d 'items.find({"repo":"releases","$or":[{"path":{"$match":"'"$TLA"'_package/'"$DATACENTER"'/'"$ENV_MANIFEST_PATH"'"}}]}).sort({"$desc": ["created"]}).limit(1)' | jq -r '.results[0].name')
 echo $latest_manifest
 #fail this job if latest_manifest is empty result is null when no manifest is found in artifactory
 if [[ "$latest_manifest" == null ]]; then
