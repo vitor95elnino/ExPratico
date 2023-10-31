@@ -15,7 +15,7 @@ ENV_MANIFEST_PATH=$(python3 - <<EOF
 import yaml
 with open('gocd/pipelines.yml', 'r') as f:
     gocd = yaml.safe_load(f)
-print(gocd['environments']['${ENV}'].get('fetch_material_from', '${ENV}' ))
+print((gocd['environments'].get('${ENV}',{})).get('fetch_material_from', '${ENV}' ))
 EOF
 )
 artifactory_url="https://artifactory-prd.prd.betfair/artifactory"
