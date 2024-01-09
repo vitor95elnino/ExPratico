@@ -1,5 +1,5 @@
 approved_by: Bruno.Vieira2@paddypower.com
-notes: Success
-result: Successful
+notes: 'Aborting due to an error: One or more partial decomm jobs failed.'
+result: PartiallySuccessful
 status: completed
 tla: detestvieira
