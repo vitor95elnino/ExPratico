@@ -47,6 +47,10 @@ latest_manifest_name=$(echo $latest_manifest | jq -r '.name')
 echo "Latest manifest found is ${latest_manifest_path}/${latest_manifest_name}"
 curl "${artifactory_url}/${manifest_repo}/${latest_manifest_path}/${latest_manifest_name}" >> manifest.json
 
+if [ "${TLA_BRANCH}" != "master" ]; then
+  jq --arg build "${TLA_BRANCH}" --arg config_key "i2_${TLA}_conf_ci" '.[$config_key].build=$build' manifest.json > manifest.tmp && mv manifest.tmp manifest.json;
+fi
+
 tier1="False"
 if grep -q "TIER1_LB_CI_Build" manifest.json
 then
