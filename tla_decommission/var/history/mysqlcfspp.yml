@@ -1,3 +1,5 @@
 approved_by: adriana.marcu@betfair.com
-status: ongoing
+notes: 'Aborted due to an error: One or more partial decomm jobs failed.'
+result: PartiallySuccessful
+status: completed
 tla: mysqlcfspp
