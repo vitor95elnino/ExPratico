@@ -40,7 +40,8 @@ class CleanupProxy(Loggable):
         self.cloud_name = 'infra_osp16'
         self.cleanup_on = ['T1_Netscalers', 'T2_NewPerimNetscalers']
         self.isolated_repo = 'yes'
-        self.nfs_volumes = environment.get('NFS_VOLUMES')
+        #self.nfs_volumes = environment.get('NFS_VOLUMES')
+        self.nfs_volumes ='yes'
         self.subnet_delete = environ.get('SUBNET_DELETE')
         self.gocd_pipelines = environ.get('GOCD_Pipelines')
         self.tla_branch = 'master'

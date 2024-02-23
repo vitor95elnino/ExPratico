@@ -1,4 +1,5 @@
 #!/bin/bash
+set -x
 
 # clone framework
 git clone git@gitlab.app.betfair:devops/framework.git --depth 1
@@ -8,29 +9,51 @@ cd framework
 TLA=$(echo "${TLA}" | tr '[:upper:]' '[:lower:]')
 DATACENTER=$(echo "${DATACENTER}" | tr '[:upper:]' '[:lower:]')
 ENV=$(echo "${ENV}" | tr '[:upper:]' '[:lower:]')
+
 # get go pipelines config from TLA repo
 git archive --remote=git@gitlab.app.betfair:i2/${TLA}.git HEAD gocd/pipelines.yml| tar xvf -
-#get the manifest path from gocd/pipelines.yml default to ENV if no fetch_material_from is defined
+
+# get the manifest path from gocd/pipelines.yml- if no fetch_material_from is defined, default to ENV
+# if env definition was already removed from pipelines file, use * as default, will get latest manifest from artifactory
+# in case env never existed, use * to get any manifest, but will fail later at 'get_prereq : render group_vars/all.yml' stage
 ENV_MANIFEST_PATH=$(python3 - <<EOF
 import yaml
+env_name = '${ENV}'
 with open('gocd/pipelines.yml', 'r') as f:
     gocd = yaml.safe_load(f)
-print((gocd['environments'].get('${ENV}',{})).get('fetch_material_from', '${ENV}' ))
+    if gocd['environments'].get(env_name, {}).get('fetch_material_from') is not None:
+        env_manifest = gocd['environments'].get(env_name, {}).get('fetch_material_from', env_name)
+    elif gocd['environments'].get(env_name) is not None:
+        env_manifest = env_name
+    else:
+        env_manifest = '*'
+print(env_manifest)
 EOF
 )
+# find latest manifest in artifactory
 artifactory_url="https://artifactory-prd.prd.betfair/artifactory"
-manifest_repo="/releases"
-manifest_repo_path="/${TLA}_package/${DATACENTER}/${ENV_MANIFEST_PATH}"
-latest_manifest=$(curl -sSf -u $ARTIFACTORY_USERNAME:$ARTIFACTORY_PASSWORD -H "content-type: text/plain" -X POST 'https://artifactory-prd.prd.betfair/artifactory/api/search/aql' -d 'items.find({"repo":"releases","$or":[{"path":{"$match":"'"$TLA"'_package/'"$DATACENTER"'/'"$ENV_MANIFEST_PATH"'"}}]}).sort({"$desc": ["created"]}).limit(1)' | jq -r '.results[0].name')
-echo $latest_manifest
-#fail this job if latest_manifest is empty result is null when no manifest is found in artifactory
-if [[ "$latest_manifest" == null ]]; then
+manifest_repo="releases"
+manifest_relative_path="${TLA}_package/${DATACENTER}/${ENV_MANIFEST_PATH}"
+echo "Searching for manifest in ${manifest_repo}/${manifest_relative_path}"
+latest_manifest=$(curl -sSf -u $ARTIFACTORY_USERNAME:$ARTIFACTORY_PASSWORD -H "content-type: text/plain" -X POST "${artifactory_url}/api/search/aql" -d 'items.find({"repo":"'"${manifest_repo}"'","$or":[{"path":{"$match":"'"${manifest_relative_path}"'"}}]}).sort({"$desc": ["created"]}).limit(1)' | jq -r '.results[0]')
+#fail this job if latest_manifest is null, when no manifest is found in artifactory
+if [[ ("$latest_manifest" == null) || ("$latest_manifest" == "")  ]]; then
   echo "No manifest found for $TLA $DATACENTER $ENV"
   exit 1
 fi
-curl "${artifactory_url}${manifest_repo}${manifest_repo_path}/${latest_manifest}" >> manifest.json
 
-# At this point we are inside framework/ folder
+latest_manifest_path=$(echo $latest_manifest | jq -r '.path')
+latest_manifest_name=$(echo $latest_manifest | jq -r '.name')
+echo "Latest manifest found is ${latest_manifest_path}/${latest_manifest_name}"
+curl "${artifactory_url}/${manifest_repo}/${latest_manifest_path}/${latest_manifest_name}" >> manifest.json
+
+tier1="False"
+if grep -q "TIER1_LB_CI_Build" manifest.json
+then
+    tier1="True"
+fi
+
+# At this point we are inside framework folder
 echo "Setting the default parameters"
 source ../osp16_cleanup_job_tasks/osp16_cleanup_job_set_envs.sh
 
@@ -41,6 +64,8 @@ cp ../id_rsa .
 cp ../id_rsa-cert.pub .
 
 source ./env_vars
+
+docker pull docker.app.betfair/ansible/ansible-8.0:latest
 
 docker run --rm -i \
 -v ${PWD}:/workdir \
@@ -61,19 +86,22 @@ docker run --rm -i \
 -e AVI_USERNAME \
 -e AVI_PASSWORD \
 --env-file <(cat env_vars | tr '=' ' ' | awk '{print $2}') \
-docker.app.betfair/ansible/ansible-8.0 \
+docker.app.betfair/ansible/ansible-8.0:latest \
   ansible-playbook pipeline.yml \
   -e stage='osp16_decomm' \
   -e dc=${DATACENTER} \
   -e availability_zone=${AVAILABILITY_ZONE} \
-  -e osp_az=${OSP_AZ} \
+  -e oaz=${AZ_OSP16} \
   -e environment=${ENV} \
   -e product_environment=${ENV} \
   -e product=${TLA} \
   -e vip="True" \
+  -e tier1=$tier1 \
   -u centos \
+  -vvv \
   --private-key=/workdir/id_rsa \
   --connection=local
+
 
 # Check the exit code of the docker run command
 if [ $? != 0 ]; then

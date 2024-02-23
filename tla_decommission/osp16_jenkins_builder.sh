@@ -1,6 +1,5 @@
 #!/usr/bin/env sh
 BYPASS_PARTIAL_DECOMM_JOB=${BYPASS_PARTIAL_DECOMM_JOB:-'False'}
-
 docker run --rm  \
 -v "$(pwd)":/app \
 --workdir=/app \
@@ -35,7 +34,7 @@ docker run --rm  \
 -e BUILD_USER_EMAIL="$BUILD_USER_EMAIL" \
 -e LOGGER_OVERRIDE="$LOGGER_OVERRIDE" \
 -e BYPASS_PARTIAL_DECOMM_JOB="$BYPASS_PARTIAL_DECOMM_JOB" \
-docker.app.betfair/ansible/ansible-2.9:300 ./run_job.sh  | tee outputjob.txt
+docker.app.betfair/ansible/ansible-8.0:latest ./run_job.sh  | tee outputjob.txt
 ecode=${PIPESTATUS[0]}
 
 if (grep -e "Current issue: PPBCM" outputjob.txt); then
