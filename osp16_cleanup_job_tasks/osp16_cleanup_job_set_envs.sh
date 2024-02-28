@@ -27,7 +27,7 @@ echo "
  export VSD_USERNAME=csproot
  export VSD_ENTERPRISE=csp
  export VAULT_ADDR=https://vault-prd.prd.betfair
- export INFOBLOX_IP=ns0.betfair
+ export INFOBLOX_IP=ib.ns.betfair
  export INFOBLOX_USER=svc_osp_infoblox
  export NITRO_USER=i2nsapi
  export ARTIFACTORY_URL=https://artifactory-prd.prd.betfair/artifactory/
