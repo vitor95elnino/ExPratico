@@ -22,7 +22,7 @@ docker run --rm  \
 -e JIRA_PASSWORD="$JIRA_PASSWORD" \
 -e CHANGE_ID="$CHANGE_ID" \
 -e SUBNET_DELETE="$SUBNET_DELETE" \
-docker.app.betfair/ansible/ansible-8.0 ./run_job.sh
+docker.app.betfair/cloud-automation/product/osp16_tla_decommission:latest ./run_job.sh
 
 # Check the exit code of the docker run command
 if [ $? != 0 ]; then
