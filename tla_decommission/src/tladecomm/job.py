@@ -213,7 +213,9 @@ class Job(Loggable):
                 except RuntimeError as fatal_exception:
                     self._logger.error(f'Aborting due to an error: '
                                        f'{fatal_exception}')
+                    self.get_change_manager_helper().end(False, str(fatal_exception))
                     exit_code = 1  # Error
+
             else:
                 self._logger.info(
                     f'The requirements to run {self._context.tla}\'s '
