@@ -31,6 +31,7 @@ docker run --rm -i \
 -e WORKDIR=/workdir \
 -e OS_USERNAME \
 -e OS_PASSWORD \
+-e ARTIFACTORY_PASSWORD \
 -e TENANT \
 -e ANSIBLE_CONFIG=/workdir/ansible.cfg \
 --env-file <(cat env_vars | tr '=' ' ' | awk '{print $2}') \
