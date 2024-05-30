@@ -86,6 +86,7 @@ docker run --rm -i \
 -e NITRO_PASS \
 -e OS_USERNAME \
 -e OS_PASSWORD \
+-e ARTIFACTORY_PASSWORD \
 -e TENANT \
 -e AVI_USERNAME \
 -e AVI_PASSWORD \
