@@ -2,8 +2,8 @@ wheel
 jira==2.0.0
 jira_insight
 openstacksdk
-python-gitlab
+python-gitlab==4.4.0
 PyYaml
 requests
 urllib3
-catoolkit==4.7.0
+catoolkit==5.0.0
