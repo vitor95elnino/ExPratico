@@ -6,4 +6,4 @@ python-gitlab==4.4.0
 PyYaml
 requests
 urllib3
-catoolkit==5.0.0
+catoolkit==5.0.1
