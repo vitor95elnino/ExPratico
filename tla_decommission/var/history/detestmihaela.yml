@@ -1,5 +1,5 @@
 approved_by: mihaela.baciu@ppb.com
-notes: Success
-result: Successful
+notes: One or more partial decomm jobs failed.
+result: PartiallySuccessful
 status: completed
 tla: detestmihaela
