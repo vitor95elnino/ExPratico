@@ -1,8 +1,5 @@
 #!/bin/bash
 
-## Evaluate the CONSUL_MASTER_TOKEN
-CMT=CONSUL_MASTER_TOKEN_${DATACENTER}${AZ_OSP16}
-
 echo "
  export TLA=${TLA}
  export jenkins=jenkins-prd.prd.betfair
@@ -20,33 +17,15 @@ echo "
  export OS_USER_DOMAIN_NAME=osp-ldap
  export OS_PROJECT_DOMAIN_NAME=osp-ldap
  export OS_IDENTITY_API_VERSION=3
- export VSD_API_VERSION=3.0
- export VSD_API_URL=https://${DATACENTER}-nuvsd01-inf.inf.betfair:8443
- export VSD_API_URL_ie1=https://ie1-nuvsd01-inf.inf.betfair:8443
- export VSD_API_URL_ie2=https://ie2-nuvsd01-inf.inf.betfair:8443
- export VSD_USERNAME=csproot
- export VSD_ENTERPRISE=csp
  export VAULT_ADDR=https://vault-prd.prd.betfair
- export INFOBLOX_IP=ib.ns.betfair
- export INFOBLOX_USER=svc_osp_infoblox
- export NITRO_USER=i2nsapi
  export ARTIFACTORY_URL=https://artifactory-prd.prd.betfair/artifactory/
  export ARTIFACTORY_USERNAME=admin
  export PYTHONUNBUFFERED=true
  export ANSIBLE_FORCE_COLOR=1
  export NETAPP_HOST=${DATACENTER}-nacosp01.inf.betfair
  export OS_USERNAME=${OS_USERNAME}
- export OS_PASSWORD=${OS_PASSWORD}
- export UDNS_SERVER=restapi.ultradns.com
- export CONSUL_MASTER_TOKEN=${!CMT}
- export UDNS_USER=api-cloudautomation" >> env_vars
+ export OS_PASSWORD=${OS_PASSWORD}" >> env_vars
  
-## TODO 
-if [[ ${DATACENTER} = 'ie1' ]];then
-   echo " export VSD_PASSWORD=$VSD_PASSWORD_ie1" >> env_vars
-else
-   echo " export VSD_PASSWORD=$VSD_PASSWORD_ie2" >> env_vars
-fi
 
 if [[ ${AVAILABILITY_ZONE} = 'prd' ]];then
    echo " export SENSU_URL=http://${DATACENTER}-sensu-api-only.app.betfair" >> env_vars
