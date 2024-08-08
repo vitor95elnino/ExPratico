@@ -1,3 +1,5 @@
 approved_by: Denis.Jackman@betfair.com
-status: ongoing
+notes: Error calling jenkins job
+result: PartiallySuccessful
+status: completed
 tla: detestjun
