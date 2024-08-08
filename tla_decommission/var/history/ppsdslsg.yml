@@ -1,3 +1,5 @@
 approved_by: carlos.jesus@blip.pt
-status: ongoing
+notes: One or more partial decomm jobs failed.
+result: PartiallySuccessful
+status: completed
 tla: ppsdslsg
