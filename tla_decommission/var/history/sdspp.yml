@@ -1,3 +1,5 @@
 approved_by: stephen.cardie@flutteruki.com
-status: ongoing
+notes: One or more partial decomm jobs failed.
+result: PartiallySuccessful
+status: completed
 tla: sdspp
