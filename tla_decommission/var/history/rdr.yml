@@ -1,3 +1,5 @@
 approved_by: Vasco.Amaral@blip.pt
-status: ongoing
+notes: One or more partial decomm jobs failed.
+result: PartiallySuccessful
+status: completed
 tla: rdr
