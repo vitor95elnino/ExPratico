@@ -1,3 +1,5 @@
 approved_by: Tiago.Ribeiro@blip.pt
-status: ongoing
+notes: Error calling jenkins job
+result: PartiallySuccessful
+status: completed
 tla: iloreport
