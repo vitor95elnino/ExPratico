@@ -171,6 +171,10 @@ class Job(Loggable):
             # now it's possible to initialize decomm helper
             self._create_decomm_helper()
 
+
+            # Initialize EmailSdnHelper
+            email_sdn_helper = EmailSdnHelper()
+
             requested_at = self._context.request_requested_at
             approved_at = time.time()
             if self.get_guard_helper().is_this_job_allowed_to_run(
@@ -194,6 +198,9 @@ class Job(Loggable):
                     decomm_plan = self.get_decomm_helper().dry_run()
                     self.get_change_manager_helper().start(
                         json.dumps(decomm_plan))
+
+                    # Call methods to create the warning email for the sdn rules
+                    email_sdn_helper.send_email(tla_name=self._context.tla)
 
                     decomm_results = self.get_decomm_helper().run()
 
