@@ -2,18 +2,20 @@ import os
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-from catoolkit.library.utils.loggable import Loggable
 from catoolkit.service.cmdb.insight_service import InsightService
+from catoolkit.library.utils.loggable import Loggable
 from catoolkit.service.cmdb.insight_service_arguments import InsightServiceArguments
 from get_sdn_rules import SourceGraphClient
+from dotenv import load_dotenv
 from os import getenv
+
 
 def create_subject(tla):
     return f"Action Needed: Delete SDN Rule for the target {tla}"
 
 
 class EmailSdnHelper(Loggable):
-    def __init__(self, insight_service: InsightService, smtp_server: str, smtp_port: int, sender_email: str):
+    def __init__(self, sg_client: SourceGraphClient, insight_service: InsightService, smtp_server: str, smtp_port: int, sender_email: str):
         super().__init__()
 
         self.job = None
@@ -39,7 +41,7 @@ class EmailSdnHelper(Loggable):
             self._logger.info(f"Processing TLA: {tla}")
             if tla in all_people:
                 self._logger.info(f"TLA {tla} already processed. Skipping.")
-                continue  #@FIXME ter a certeza que nao esta em loop
+                continue
 
             tla_people = self._insight_service.get_tla_people(tla)
             all_people[tla] = tla_people
@@ -70,15 +72,12 @@ class EmailSdnHelper(Loggable):
                     if not isinstance(person, dict):
                         continue
 
-                    # @TODO test/check if the condition "email != 'N/A'" is needed
                     email = person.get('email')
-                    if email and email != 'N/A':  # Only add valid emails
-                        emails.append(email)
+                    emails.append(email)
         return emails
 
     def send_email(self, tla_name):
-        list_of_emails = self.get_sdn_emails()  # Get the emails for the current TLA
-        print(f"Emails to send: {list_of_emails}")
+        list_of_emails = self.get_sdn_emails(tla_name)  # Get the emails for the owners that have the rule being decomissoned
         subject = create_subject(tla_name)
         message_body = self.create_message_body(tla_name)
         self.trigger_an_email(list_of_emails, subject, message_body)
@@ -89,21 +88,21 @@ class EmailSdnHelper(Loggable):
         """
         base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..",
                                                 ".."))  # the directory is not the same as the one in the snippet
-        template_path = os.path.join(base_dir, "var", "emails", "html_sdn.html")
+        template_path = os.path.join(base_dir, "var", "emails", "html_sdn.html.j2")
 
         try:
             with open(template_path, "r") as file:
                 html_template = file.read()
         except FileNotFoundError:
-            print(f"Template file not found at {template_path}.")
+            self._logger.error(f"Template file not found at {template_path}.")
             return ""
 
-        # Replace placeholders with actual values
-        return html_template.replace("{{ tla }}", tla_name)
+        # Replace placeholders with actual values(tla_name and i2_support slack channel)
+        return html_template.replace("{{ tla }}", tla_name).replace("{{ url }}","https://betfair.slack.com/archives/C04N7BRSK")
 
-    def get_sdn_emails(self):
+    def get_sdn_emails(self, tla_name: str):
         # Uses inherited methods from SdnHelper
-        return self.get_emails()
+        return self.get_emails(tla_name)
 
     def trigger_an_email(self, list_of_emails, subject, message_body):
         """
@@ -118,7 +117,6 @@ class EmailSdnHelper(Loggable):
             with smtplib.SMTP(self.smtp_config['smtp_server'], self.smtp_config['port']) as server:
 
                 for email in list_of_emails:
-                    print(f"Sending email to {email}")
                     msg = MIMEMultipart()
                     msg['From'] = self.smtp_config['sender_email']
                     msg['To'] = email
@@ -130,23 +128,24 @@ class EmailSdnHelper(Loggable):
 
                     # Send the email
                     server.send_message(msg)
-                    print(f"Email sent to {email}")
+                    self._logger.info(f"Email sent to {email}")
 
         except Exception as e:
-            print(f"An error occurred while sending email: {e}")
+           self._logger.error(f"An error occurred while sending email: {e}")
+
 
 if __name__ == '__main__':
+    # Load environment variables from .env file
+    # @TODO: DELETE THIS AFTER TESTING
+    load_dotenv()
     smtp_server = os.getenv('SMTP_SERVER', 'ie1-mail-prd.prd.betfair')
     port = int(os.getenv('SMTP_PORT', 25))
     sender_email = os.getenv('SENDER_EMAIL', 'cloud.automation@paddypowerbetfair.com')
-
     jira_endpoint = getenv('JIRA_ENDPOINT')
     jira_username = getenv('JIRA_USERNAME')
     jira_password = getenv('JIRA_PASSWORD')
-
     sourcegraph_api = getenv('SOURCEGRAPH_API')
     access_token = getenv('SOURCEGRAPH_TOKEN')
-
     tla_name = getenv('TLA_NAME', 'detestrg')
 
     # Create InsightServiceArguments with appropriate values
@@ -161,5 +160,5 @@ if __name__ == '__main__':
     insight_service = InsightService(insight_service_args)
     sg_client = SourceGraphClient(sourcegraph_api, access_token)
 
-    esh = EmailSdnHelper(insight_service, smtp_server, port, sender_email)
+    esh = EmailSdnHelper(sg_client, insight_service, smtp_server, port, sender_email)
     esh.send_email(tla_name)

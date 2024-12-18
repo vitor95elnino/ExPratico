@@ -14,16 +14,13 @@ class SourceGraphClient:
 
         data_sdn = f'{{"query":"query {{ search(query: \\"repo:^gitlab.app.betfair/i2/ file:sdn/defaults.yml target: tla_{tla_name} \\") {{ results {{ results {{ ... on FileMatch {{ repository {{ name }} file {{ path }} lineMatches {{ preview lineNumber }} }} }} }} }} }}","variables":null}}'
 
-        response = post(sourcegraph_api, data=data_sdn, headers=headers)
-        print(response.json())  # @FIXME remove prints
+        response = post(self.sourcegraph_api, data=data_sdn, headers=headers)
         return response.json()
 
     def process_data(self, data: dict, tla_name: str) -> list:
         tlas_using_target = []
         for result in data['data']['search']['results']['results']:
-            print(result, '1')
             for line_match in result['lineMatches']:
-                print(line_match, '2')
                 if f'target: tla_{tla_name}' in line_match['preview']:
                     tlas_using_target.append(result['repository']['name'].split('/')[-1])
         return tlas_using_target
@@ -35,7 +32,6 @@ if __name__ == '__main__':
     tla_name = getenv('TLA_NAME', 'detestrg')
 
     if not sourcegraph_api or not access_token:
-        print('Missing environment variables SOURCEGRAPH_API or SOURCEGRAPH_TOKEN')
         exit(1)
 
     sg_client = SourceGraphClient(sourcegraph_api, access_token)
