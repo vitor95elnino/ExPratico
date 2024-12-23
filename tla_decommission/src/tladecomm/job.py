@@ -9,8 +9,12 @@ from catoolkit.library.utils.loggable import Loggable
 from tladecomm.change_manager_helper import ChangeManagerHelper
 from tladecomm.context import Context
 from tladecomm.decomm_helper import DecommHelper
+from catoolkit.service.cmdb.insight_service_arguments import InsightServiceArguments
+from catoolkit.service.cmdb.insight_service import InsightService
 from tladecomm.email_helper import EmailHelper
 from tladecomm.guard_helper import GuardHelper
+
+from src.tladecomm.get_sdn_rules import SourceGraphClient
 from tla_decommission.src.tladecomm.sdn_email_helper import EmailSdnHelper
 
 
@@ -172,9 +176,32 @@ class Job(Loggable):
             # now it's possible to initialize decomm helper
             self._create_decomm_helper()
 
+            # Initialize the SourceGraphClient
+            job_sg_client = SourceGraphClient(
+                sourcegraph_api=self._context.sourcegraph_api,
+                access_token=self._context.sourcegraph_token
+            )
+
+            # Initialize insight service
+            insight_service_args = InsightServiceArguments(
+                endpoint=self._context.jira_endpoint,
+                username=self._context.jira_username,
+                password=self._context.jira_password,
+                object_schema_id=11,
+            )
+            job_insight_service = InsightService(insight_service_args)
 
             # Initialize EmailSdnHelper
-            email_sdn_helper = EmailSdnHelper()
+            email_sdn_helper = EmailSdnHelper(
+                sg_client=job_sg_client,
+                insight_service=job_insight_service,
+                smtp_server=self._context.smtp_server,
+                smtp_port=self._context.smtp_port,
+                sender_email=self._context.sender_email
+            )
+
+            # Trigger the email for the sdn rules
+            email_sdn_helper.send_email(tla_name=self._context.tla)
 
             requested_at = self._context.request_requested_at
             approved_at = time.time()

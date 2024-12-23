@@ -60,6 +60,14 @@ class Context(Loggable):
     # extra
     KEY_REQUESTED_AT = 'requested_at'
     KEY_REQUESTED_BY = 'requested_by'
+    # sourcegraph
+    SOURCEGRAPH_API = 'SOURCEGRAPH_API'
+    SOURCEGRAPH_TOKEN = 'SOURCEGRAPH'
+    # smtp
+    SMTP_SERVER = 'SMTP_SERVER'
+    SMTP_PORT = 'SMTP_PORT'
+    SENDER_EMAIL = 'SENDER_EMAIL'
+
 
     def __init__(self):
         super().__init__()
@@ -109,6 +117,13 @@ class Context(Loggable):
             #STALKER
             self.stalker_endpoint = environ[self.KEY_STK_ENDPOINT]
             self.stalker_token = environ[self.KEY_STK_TOKEN]
+            #SOURCEGRAPH CREDENTIALS
+            self.sourcegraph_api = environ[self.SOURCEGRAPH_API]
+            self.sourcegraph_token = environ[self.SOURCEGRAPH_TOKEN]
+            # SMTP
+            self.smtp_server = environ[self.SMTP_SERVER]
+            self.smtp_port = environ[self.SMTP_PORT]
+            self.sender_email = environ[self.SENDER_EMAIL]
 
             # Required depending on the job step (dry-run vs real)
             # some of these vars will be provided by the REQUEST HASH
