@@ -38,7 +38,7 @@ docker run --rm  \
 -e SOURCEGRAPH_TOKEN="$SOURCEGRAPH_TOKEN" \
 -e SMTP_SERVER="$SMTP_SERVER" \
 -e SMTP_PORT="$SMTP_PORT" \
--e SENDER_EMAIL="$SENDER_EMAIL"
+-e SENDER_EMAIL="$SENDER_EMAIL" \
 docker.app.betfair/cloud-automation/product/osp16_tla_decommission:latest ./run_job.sh  | tee outputjob.txt
 ecode=${PIPESTATUS[0]}
 
