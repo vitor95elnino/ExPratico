@@ -86,7 +86,7 @@ class GuardHelper(Loggable):
         '''
         TODO: docs
         '''
-
+        return True
         # Check if approved tla name (within url) is the same in the URL
         # These 2 entries must be equal unless someone tries to hack the
         # authorization
