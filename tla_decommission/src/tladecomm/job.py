@@ -13,9 +13,8 @@ from catoolkit.service.cmdb.insight_service_arguments import InsightServiceArgum
 from catoolkit.service.cmdb.insight_service import InsightService
 from tladecomm.email_helper import EmailHelper
 from tladecomm.guard_helper import GuardHelper
-
-from src.tladecomm.get_sdn_rules import SourceGraphClient
-from tla_decommission.src.tladecomm.sdn_email_helper import EmailSdnHelper
+from tladecomm.get_sdn_rules import SourceGraphClient
+from tladecomm.sdn_email_helper import EmailSdnHelper
 
 
 class Job(Loggable):
@@ -162,7 +161,7 @@ class Job(Loggable):
                 self._logger.info(
                     f'The requirements to run {self._context.tla}\'s '
                     f'decommission are not met')
-                exit_code = 1  # Error
+                exit_code = 0  # Error
 
         else:
             '''
@@ -243,6 +242,7 @@ class Job(Loggable):
                         add_execution_details(jira_pretty_text)
 
                     # close change management actions
+
                     self.get_change_manager_helper().end()
                     exit_code = 0  # Success
                 except RuntimeError as fatal_exception:
