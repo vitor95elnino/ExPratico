@@ -44,20 +44,24 @@ class EmailSdnHelper(Loggable):
                 self._logger.info(f"TLA {tla} already processed. Skipping.")
                 continue
 
-            tla_people = self._insight_service.get_tla_people(tla)
-            all_people[tla] = tla_people
+            try:
+                tla_people = self._insight_service.get_tla_people(tla)
+                all_people[tla] = tla_people
 
-            formatted_people = {}
-            for key, value in tla_people.items():
-                if isinstance(value, list):
-                    formatted_people[key] = [
-                        vars(person) if hasattr(person, "__dict__") else str(person) for person in value
-                    ]
-                else:
-                    formatted_people[key] = value
+                formatted_people = {}
+                for key, value in tla_people.items():
+                    if isinstance(value, list):
+                        formatted_people[key] = [
+                            vars(person) if hasattr(person, "__dict__") else str(person) for person in value
+                        ]
+                    else:
+                        formatted_people[key] = value
 
-            all_people[tla] = formatted_people
-            self._logger.info(f"Processed TLA {tla} people: {formatted_people}")
+                all_people[tla] = formatted_people
+                self._logger.info(f"Processed TLA {tla} people: {formatted_people}")
+            except Exception as error:
+                self._logger.error(f"Error getting the owners in Jira of the {tla}: {error}")
+
         return all_people
 
     def get_emails(self, tla_name: str) -> list:
