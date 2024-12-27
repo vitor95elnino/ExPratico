@@ -1,0 +1,11 @@
+Portugal,Lisboa
+Espanha,Madrid
+Belgica,Bruxelas
+França,Paris
+Alemanha,Berlim
+Ucrânia,Kiev
+Itália,Roma
+Angola,Luanda
+Inglaterra,Londres
+Russia,Moscovo
+Austrália,Camberra
