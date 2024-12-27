@@ -62,7 +62,7 @@ class Context(Loggable):
     KEY_REQUESTED_BY = 'requested_by'
     # sourcegraph
     SOURCEGRAPH_API = 'SOURCEGRAPH_API'
-    SOURCEGRAPH_TOKEN = 'SOURCEGRAPH'
+    SOURCEGRAPH_TOKEN = 'SOURCEGRAPH_TOKEN'
     # smtp
     SMTP_SERVER = 'SMTP_SERVER'
     SMTP_PORT = 'SMTP_PORT'

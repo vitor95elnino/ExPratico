@@ -33,4 +33,7 @@ var/emails/*
 var/scm/*
 htmlcov/*
 .DS_Store
+misc/*
+vcs.xml
+.idea/*
 

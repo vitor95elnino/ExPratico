@@ -1,18 +1,14 @@
 import os
 import smtplib
+
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from catoolkit.service.cmdb.insight_service import InsightService
 from catoolkit.library.utils.loggable import Loggable
-from catoolkit.service.cmdb.insight_service_arguments import InsightServiceArguments
-from get_sdn_rules import SourceGraphClient
-from dotenv import load_dotenv
-from os import getenv
-
+from tladecomm.get_sdn_rules import SourceGraphClient
 
 def create_subject(tla):
     return f"Action Needed: Delete SDN Rule for the target {tla}"
-
 
 class EmailSdnHelper(Loggable):
     def __init__(self, sg_client: SourceGraphClient, insight_service: InsightService, smtp_server: str, smtp_port: int, sender_email: str):
@@ -29,13 +25,18 @@ class EmailSdnHelper(Loggable):
         }
 
     def fetch_sdn_rules(self, tla_name: str):
+        """
+        Fetches SDN rules for a given TLA name using the SourceGraphClient.
+        """
         data = self._sg_client.get_sdn_rules(tla_name)
         return self._sg_client.process_data(data, tla_name)
 
     def get_tla_people(self, tla_name: str) -> dict:
+        """
+        Retrieves and processes people associated with TLAs that use the TLA to be decommed as a target.
+        """
         all_people = {}
         tla_list = self.fetch_sdn_rules(tla_name)
-        self._logger.info("Initial TLA list:", tla_list)
 
         for tla in tla_list:
             self._logger.info(f"Processing TLA: {tla}")
@@ -45,21 +46,24 @@ class EmailSdnHelper(Loggable):
 
             tla_people = self._insight_service.get_tla_people(tla)
             all_people[tla] = tla_people
-            # Format the people data for stop the memory identifiers
+
             formatted_people = {}
             for key, value in tla_people.items():
-                if isinstance(value, list):  # Sees if is a list
+                if isinstance(value, list):
                     formatted_people[key] = [
                         vars(person) if hasattr(person, "__dict__") else str(person) for person in value
                     ]
                 else:
-                    formatted_people[key] = value  # For non-list values, keep as-is
+                    formatted_people[key] = value
 
             all_people[tla] = formatted_people
             self._logger.info(f"Processed TLA {tla} people: {formatted_people}")
         return all_people
 
     def get_emails(self, tla_name: str) -> list:
+        """
+        Gets the list of emails to the owners of the SDN rule being decommissioned.
+        """
         all_people = self.get_tla_people(tla_name)
         emails = []
         for tla, people_data in all_people.items():
@@ -67,7 +71,6 @@ class EmailSdnHelper(Loggable):
                 if not isinstance(people_list, list):
                     continue
 
-                # Extract emails from each person's attributes
                 for person in people_list:
                     if not isinstance(person, dict):
                         continue
@@ -77,7 +80,12 @@ class EmailSdnHelper(Loggable):
         return emails
 
     def send_email(self, tla_name):
-        list_of_emails = self.get_sdn_emails(tla_name)  # Get the emails for the owners that have the rule being decomissoned
+        """
+        This function gets all the data to the trigger_an_email function
+
+        :param tla_name: The TLA name that is beind decommissioned.
+        """
+        list_of_emails = self.get_sdn_emails(tla_name)
         subject = create_subject(tla_name)
         message_body = self.create_message_body(tla_name)
         self.trigger_an_email(list_of_emails, subject, message_body)
@@ -86,8 +94,7 @@ class EmailSdnHelper(Loggable):
         """
         Reads the HTML template from the file system, replaces placeholders, and returns the message body.
         """
-        base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..",
-                                                ".."))  # the directory is not the same as the one in the snippet
+        base_dir = os.getenv("BASE_DIR", ".")
         template_path = os.path.join(base_dir, "var", "emails", "html_sdn.html.j2")
 
         try:
@@ -101,6 +108,12 @@ class EmailSdnHelper(Loggable):
         return html_template.replace("{{ tla }}", tla_name).replace("{{ url }}","https://betfair.slack.com/archives/C04N7BRSK")
 
     def get_sdn_emails(self, tla_name: str):
+        """
+        Retrieves email addresses of people associated with the given TLA.
+
+        :param tla_name: The TLA name to fetch email addresses for.
+        :return: A list of email addresses.
+        """
         # Uses inherited methods from SdnHelper
         return self.get_emails(tla_name)
 
@@ -133,32 +146,3 @@ class EmailSdnHelper(Loggable):
         except Exception as e:
            self._logger.error(f"An error occurred while sending email: {e}")
 
-
-if __name__ == '__main__':
-    # Load environment variables from .env file
-    # @TODO: DELETE THIS AFTER TESTING
-    load_dotenv()
-    smtp_server = os.getenv('SMTP_SERVER', 'ie1-mail-prd.prd.betfair')
-    port = int(os.getenv('SMTP_PORT', 25))
-    sender_email = os.getenv('SENDER_EMAIL', 'cloud.automation@paddypowerbetfair.com')
-    jira_endpoint = getenv('JIRA_ENDPOINT')
-    jira_username = getenv('JIRA_USERNAME')
-    jira_password = getenv('JIRA_PASSWORD')
-    sourcegraph_api = getenv('SOURCEGRAPH_API')
-    access_token = getenv('SOURCEGRAPH_TOKEN')
-    tla_name = getenv('TLA_NAME', 'detestrg')
-
-    # Create InsightServiceArguments with appropriate values
-    insight_service_args = InsightServiceArguments(
-        endpoint=jira_endpoint,
-        username=jira_username,
-        password=jira_password,
-        object_schema_id=11,
-    )
-
-    # Initialize the InsightService with valid arguments
-    insight_service = InsightService(insight_service_args)
-    sg_client = SourceGraphClient(sourcegraph_api, access_token)
-
-    esh = EmailSdnHelper(sg_client, insight_service, smtp_server, port, sender_email)
-    esh.send_email(tla_name)

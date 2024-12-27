@@ -183,9 +183,9 @@ class Job(Loggable):
 
             # Initialize insight service
             insight_service_args = InsightServiceArguments(
-                endpoint=self._context.jira_endpoint,
-                username=self._context.jira_username,
-                password=self._context.jira_password,
+                endpoint=self._context.cmdb_endpoint,
+                username=self._context.cmdb_username,
+                password=self._context.cmdb_password,
                 object_schema_id=11,
             )
             job_insight_service = InsightService(insight_service_args)
@@ -198,9 +198,10 @@ class Job(Loggable):
                 smtp_port=self._context.smtp_port,
                 sender_email=self._context.sender_email
             )
-
-            # Trigger the email for the sdn rules
-            email_sdn_helper.send_email(tla_name=self._context.tla)
+            try:
+                email_sdn_helper.send_email(tla_name=self._context.tla)
+            except Exception as error:
+                self._logger.error(f'Failed to send the email about shared acl rules: {error}')
 
             requested_at = self._context.request_requested_at
             approved_at = time.time()
