@@ -15,9 +15,14 @@ class SourceGraphClient:
          }
 
         data_sdn = f'{{"query":"query {{ search(query: \\"repo:^gitlab.app.betfair/i2/ file:sdn/defaults.yml target: tla_{tla_name} \\") {{ results {{ results {{ ... on FileMatch {{ repository {{ name }} file {{ path }} lineMatches {{ preview lineNumber }} }} }} }} }} }}","variables":null}}'
+        try:
+            response = post(self.sourcegraph_api, data=data_sdn, headers=headers)
+            response.raise_for_status()
+            return response.json()
+        except Exception as error:
+            print(f"It was unable of getting the SourceGraph data: {error}")
+            return {}
 
-        response = post(self.sourcegraph_api, data=data_sdn, headers=headers)
-        return response.json()
 
     def process_data(self, data: dict, tla_name: str) -> list:
         """
