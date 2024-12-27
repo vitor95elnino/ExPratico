@@ -161,7 +161,7 @@ class Job(Loggable):
                 self._logger.info(
                     f'The requirements to run {self._context.tla}\'s '
                     f'decommission are not met')
-                exit_code = 0  # Error
+                exit_code = 1  # Error
 
         else:
             '''
