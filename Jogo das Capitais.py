@@ -1,6 +1,11 @@
 import random
 
 def carregar_txt():
+    """
+    Esta função carrega o arquivo 'jogo_das_capitais.txt'.
+    Se o arquivo não for encontrado, cria um novo arquivo vazio.
+    Retorna um dicionário com pares de país-capital.
+    """
     jogo_das_capitais = {}
     try:
         with open("jogo_das_capitais.txt", "r", encoding="utf-8") as file:
@@ -9,19 +14,29 @@ def carregar_txt():
                 jogo_das_capitais[pais] = capital
     except FileNotFoundError:
         print("Ficheiro não encontrado. A criar um novo ficheiro.")
-        open("jogo_das_capitais.txt", "w").close()  # Cria um ficheiro vazio
+        open("jogo_das_capitais.txt", "w").close()
+        pass # Cria um ficheiro vazio
     return jogo_das_capitais
 
 
 def guardar_dados(jogo_das_capitais):
+    """
+    Esta função guarda as keys pais,capital no ficheiro 'jogo_das_capitais.txt'.
+    """
     with open("jogo_das_capitais.txt", "w", encoding="utf-8") as file:
         for pais, capital in jogo_das_capitais.items():
             file.write(pais + "," + capital + "\n")
 
 
 def adicionar(jogo_das_capitais):
+    """
+    Esta função permite ao utilizador adicionar novos keys de país,capital ao jogo
+    """
     while True:
         pais = input("Insira o nome do país: ").strip()
+        if not pais:
+            print("Nome do país não pode ser vazio.\n")
+            continue
         if pais in jogo_das_capitais:
             print(pais +" já existe na base de dados.\n")
             continue
@@ -35,7 +50,13 @@ def adicionar(jogo_das_capitais):
 
 
 def jogar_quiz(jogo_das_capitais):
-    jogador = input("Insira o nome do Jogador: ")
+    """
+    Esta função permite ao utilizador jogar o quiz das capitais
+    """
+    jogador = input("Insira o nome do Jogador: ").strip()
+    if not jogador:
+        print("Nome do jogador não pode ser vazio.\n")
+        return
     if not jogo_das_capitais:
         print("Não há dados disponiveis. Adicione países e capitais para começar a jogar. \n")
         return
@@ -55,6 +76,9 @@ def jogar_quiz(jogo_das_capitais):
 
 
 def main():
+    """
+    Função principal que mostra o menu e permite ao utilizador escolher as opções.
+    """
 
     jogo_das_capitais = carregar_txt()
 
@@ -75,7 +99,7 @@ def main():
             print("Adeus, Volte mais Tarde")
             break
         else:
-                print("Opção inválida. Tente novamente.")
+            print("Opção inválida. Tente novamente.")
 
 if __name__ == '__main__':
     main()
