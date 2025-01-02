@@ -6,6 +6,7 @@ from email.mime.multipart import MIMEMultipart
 from catoolkit.service.cmdb.insight_service import InsightService
 from catoolkit.library.utils.loggable import Loggable
 from tladecomm.get_sdn_rules import SourceGraphClient
+from tladecomm.context import slack_url
 
 def create_subject(tla):
     return f"Action Needed: Delete SDN Rule for the target {tla}"
@@ -109,7 +110,7 @@ class EmailSdnHelper(Loggable):
             return ""
 
         # Replace placeholders with actual values(tla_name and i2_support slack channel)
-        return html_template.replace("{{ tla }}", tla_name).replace("{{ url }}","https://betfair.slack.com/archives/C04N7BRSK")
+        return html_template.replace("{{ tla }}", tla_name).replace("{{ url }}",slack_url)
 
     def get_sdn_emails(self, tla_name: str):
         """

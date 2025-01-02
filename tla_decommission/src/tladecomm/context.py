@@ -67,6 +67,8 @@ class Context(Loggable):
     SMTP_SERVER = 'SMTP_SERVER'
     SMTP_PORT = 'SMTP_PORT'
     SENDER_EMAIL = 'SENDER_EMAIL'
+    #slack
+    SLACK_URL = 'SLACK_URL'
 
 
     def __init__(self):
@@ -124,6 +126,8 @@ class Context(Loggable):
             self.smtp_server = environ[self.SMTP_SERVER]
             self.smtp_port = environ[self.SMTP_PORT]
             self.sender_email = environ[self.SENDER_EMAIL]
+            #SLACK
+            self.slack_url = environ[self.SLACK_URL]
 
             # Required depending on the job step (dry-run vs real)
             # some of these vars will be provided by the REQUEST HASH
