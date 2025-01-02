@@ -33,11 +33,11 @@ def guardar_dados(jogo_das_capitais):
 def adicionar(jogo_das_capitais):
     """
     Adiciona novos paises e capitais ao jogo (jogo_das_capitais.txt).
-    Pede ao utilizador para inserir o nome do país e verefica se já existe no dicionario.
+    Pede ao jogador para inserir o nome do país e verefica se já existe no dicionario.
     Caso não exista, em seguida é pedido para inserir a capital. Caso seja inserido um pais já existente o processo volta ao inicio pedindo para insirir um novo país.
     No dicionario .txt está a informação(país,capital) que é guardada numa linha separada por uma virgula.
     Não aceita capitais nem paises "em branco" e numeros. Caso seja introduzido informa que o mesmo é invalido, e pede para ser insirido novamente. 
-    No final é pedido ao utilizador se desaja continuar, caso este responda 'n' a função termina.
+    No final é pedido ao jogador se desaja continuar, caso este responda 'n' a função termina.
  
     """
     while True:
