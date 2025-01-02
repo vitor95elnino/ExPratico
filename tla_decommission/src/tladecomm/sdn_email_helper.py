@@ -52,9 +52,15 @@ class EmailSdnHelper(Loggable):
                 formatted_people = {}
                 for key, value in tla_people.items():
                     if isinstance(value, list):
-                        formatted_people[key] = [
-                            vars(person) if hasattr(person, "__dict__") else str(person) for person in value
-                        ]
+                        only_people = []
+                        for person in value:
+                            person_key = vars(person) if hasattr(person, "__dict__") else str(person)
+                            if person_key not in only_people:
+                                only_people.append(person_key)
+                            else:
+                                self._logger.info(f"This person in Jira is duplicated: {person_key}")
+
+                        formatted_people[key] = only_people
                     else:
                         formatted_people[key] = value
 
