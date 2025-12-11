@@ -1,15 +1,7 @@
 import random, os
 
 def carregar_txt():
-    """
-    Esta função, carrega um dicionário de países e capitais a partir de um ficheiro .txt .
-    O codigo verifica se existe um ficheiro chamada "jogo_das_capitais.txt".
-    Se o ficheiro existir, lê o conteúdo e carrega as informações para um dicionário.
-    Se o ficheiro não existir, cria um novo ficheiro vazio, com o nome"jogo_das_capitais.txt e retorna um dicionário vazio."
-    O ficheiro deve ter cada linha no formato "país,capital", separado por uma vírgula.
 
-    Neste dicionário os paises são chaves e as capitais os valores.
-    """
     jogo_das_capitais = {}
     if os.path.exists("jogo_das_capitais.txt"):
         with open("jogo_das_capitais.txt", "r", encoding="utf-8") as file:
@@ -24,27 +16,14 @@ def carregar_txt():
 
 
 def guardar_dados(jogo_das_capitais):
-    """
-    Guarda no ficheiro jogo_das_capitais.txt os paises e as capitais, separados por uma virgula. 
 
-    jogo_das_capitais: Dicionário com países como chaves e capitais como valores.
-    """
     with open("jogo_das_capitais.txt", "w", encoding="utf-8") as file:
         for pais, capital in jogo_das_capitais.items():
             file.write(pais + "," + capital + "\n")
 
 
 def adicionar(jogo_das_capitais):
-    """
-    Esta função permite ao jogador adicionar novos paises e capitais ao dicionário.
-    É Pedido ao jogador para inserir o nome do país e verefica se já existe no dicionario. 
-    No caso de ser inserido um pais já existente o processo volta ao inicio pedindo para insirir um novo país.
-    Caso não exista, em seguida é pedido para inserir a capital.
-    No dicionario está a informação(país,capital) que é guardada numa linha separada por uma virgula.
-    Não aceita capitais nem paises em branco e numeros. Caso seja introduzido informa que o mesmo é invalido, e pede para ser insirido novamente. 
-    A função 'ver_paises_capitais' permite ao jogador ver o dicionário.
-    Este ciclo termina quando o jogador não adicionar mais países e capitais.
-    """
+ 
     while True:
         
         #País
@@ -91,16 +70,7 @@ def adicionar(jogo_das_capitais):
 
 
 def jogar_jogo(jogo_das_capitais, nome=None):
-    """
-    Função para iniciar o jogo. 
-    Verifica se o dicionário tem pelo menos 10 paises e capitais.
-    Se não existir, o jogador é avisado que para começar a jogar terá que adicionar mais paises e capitais ao dicionário e é chamada a função adicionar.
-    Caso existam pelo menos 10, é usado um random para seleciona aleatoriamente 10 paises e perguntar as suas capitais. 
-    Por cada resposta certa o jogador recebe 1 ponto. Esse ponto é somado a variavel pontuacao que inicia a 0.
-    O jogador é informado sempre que acerta ou erra uma capital.
-    Por ultimo é mostrado no ecrã quantas capitais o jogador respondeu correto(pontuação) e o total de perguntas (total_perguntas = len(jogo_das_capitais)), 
-    é perguntado ao jogador se deseja continuar, caso o jogador continue a jogar, o nome do jogador fornecido no parâmetro 'nome' é reutilizado.
-    """
+
 
     if len(jogo_das_capitais) < 10:
         print("Não há dados disponiveis. Precisa de ter 10 países e as respetivas capitais para começar a jogar. \n")
@@ -141,10 +111,7 @@ def jogar_jogo(jogo_das_capitais, nome=None):
 
 
 def ver_paises_capitais(jogo_das_capitais):
-    """
-    Função para visualizar conteúdo do dicionário.
-    Exibe no ecrã o conteúdo do dicionario 'jogo_das_capitais', após ser exibido no ecrã aguarda uma instrução do utilizador para avançar.
-    """
+
     with open("jogo_das_capitais.txt", "r", encoding="utf-8") as file:
         conteudo = file.read()
         print("\nConteúdo do arquivo jogo_das_capitais.txt:\n")
@@ -156,16 +123,7 @@ def ver_paises_capitais(jogo_das_capitais):
         
 
 def main():
-    """
-    Função principal
-    Começa por carregar os dados do dicionario.
-    Exibe um menu de seleção(1,2,3,4)que permite:
-        1- Jogar: Permite ao jogador começar a jogar. 
-        2- Adicionar: Permite ao jogador adicionar novos países e capitais ao dicionário. 
-        3- Ver dicionário: Chama a função ver_paises_capitais para o jogador ver o dicionário.
-        4- Sair: Sai do programa.
-        Caso de selecionar outra opção, aparece no ecrã a msg:"Opção inválida. Tente novamente."
-    """
+
     jogo_das_capitais = carregar_txt()
 
     while True:
@@ -193,4 +151,5 @@ def main():
 
 
 if __name__ == '__main__':
+
     main()
